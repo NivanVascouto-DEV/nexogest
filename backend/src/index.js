@@ -19,6 +19,12 @@ app.use('/produtos', produtosRoutes);
 const clientesRoutes = require('./routes/clientes');
 app.use('/clientes', clientesRoutes);
 
+const pedidosRoutes = require('./routes/pedidos');
+app.use('/pedidos', pedidosRoutes);
+
+const itensPedidoRoutes = require('./routes/itensPedido');
+app.use('/itens-pedido', itensPedidoRoutes);
+
 app.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
 });
