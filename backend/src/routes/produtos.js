@@ -52,4 +52,21 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+router.get('/:id/custo', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const resultado = await pool.query(
+            `SELECT SUM(ft.quantidade_usada * i.custo_por_unidade) AS custo_total
+             FROM ficha_tecnica ft
+             JOIN insumos i ON i.id = ft.insumo_id
+             WHERE ft.produto_id = $1`,
+            [id]
+        );
+        res.json({ custo_producao: resultado.rows[0].custo_total });
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({ mensagem: 'Erro ao calcular custo do produto' });
+    }
+});
+
 module.exports = router;
