@@ -55,3 +55,30 @@ CREATE TABLE itens_pedido (
 
 ALTER TABLE usuarios ADD CONSTRAINT usuarios_login_unique UNIQUE (login);
 ALTER TABLE produtos ADD CONSTRAINT produtos_codigo_unique UNIQUE (codigo);
+
+-- Módulo financeiro (calculadora de markup + lançamentos)
+
+CREATE TABLE insumos (
+    id SERIAL PRIMARY KEY,
+    nome TEXT,
+    unidade_medida TEXT,
+    custo_por_unidade NUMERIC(10,2),
+    criado_em TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE ficha_tecnica (
+    id SERIAL PRIMARY KEY,
+    produto_id INTEGER REFERENCES produtos(id),
+    insumo_id INTEGER REFERENCES insumos(id),
+    quantidade_usada NUMERIC(10,3)
+);
+
+CREATE TABLE lancamentos_financeiros (
+    id SERIAL PRIMARY KEY,
+    tipo TEXT,
+    categoria TEXT,
+    descricao TEXT,
+    valor NUMERIC(10,2),
+    forma_pagamento TEXT,
+    data_lancamento TIMESTAMP DEFAULT NOW()
+);
