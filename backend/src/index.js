@@ -34,6 +34,12 @@ app.use('/ficha-tecnica', fichaTecnicaRoutes);
 const lancamentosRoutes = require('./routes/lancamentosFinanceiros');
 app.use('/lancamentos-financeiros', lancamentosRoutes);
 
+const usuariosRoutes = require('./routes/usuarios');
+app.use('/usuarios', usuariosRoutes);
+
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
+
 app.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
 });
