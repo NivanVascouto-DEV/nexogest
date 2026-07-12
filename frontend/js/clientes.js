@@ -1,5 +1,12 @@
 const token = localStorage.getItem('token');
 
+function iniciais(nome) {
+  if (!nome) return '?';
+  const partes = nome.trim().split(/\s+/);
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
 function carregarClientes() {
   fetch('http://localhost:3000/clientes', {
     headers: { 'Authorization': 'Bearer ' + token }
@@ -13,7 +20,10 @@ function carregarClientes() {
         const div = document.createElement('div');
         div.className = 'pedido-item';
         div.innerHTML = `
-          <p>${cliente.nome} - ${cliente.telefone}${cliente.endereco ? ' - ' + cliente.endereco : ''}</p>
+          <div class="pedido-item-info">
+            <div class="avatar-iniciais">${iniciais(cliente.nome)}</div>
+            <p>${cliente.nome} - ${cliente.telefone}${cliente.endereco ? ' - ' + cliente.endereco : ''}</p>
+          </div>
           <div>
             <button data-id="${cliente.id}" class="btn-editar-cliente">Editar</button>
             <button data-id="${cliente.id}" class="btn-excluir-cliente">Excluir</button>

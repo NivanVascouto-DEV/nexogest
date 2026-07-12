@@ -1,5 +1,6 @@
 const token = localStorage.getItem('token');
 let todosPedidos = [];
+let clientesMap = {};
 let abaAtual = 'pendente';
 
 const proximoStatus = {
@@ -7,6 +8,22 @@ const proximoStatus = {
   preparando: 'saiu_para_entrega',
   saiu_para_entrega: 'entregue'
 };
+
+function iniciais(nome) {
+  if (!nome) return '?';
+  const partes = nome.trim().split(/\s+/);
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+async function carregarClientesMap() {
+  const resposta = await fetch('http://localhost:3000/clientes', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const clientes = await resposta.json();
+  clientesMap = {};
+  clientes.forEach(c => { clientesMap[c.id] = c.nome; });
+}
 
 function carregarPedidos() {
   fetch('http://localhost:3000/pedidos', {
@@ -31,10 +48,14 @@ function renderizarPedidos() {
   }
 
   filtrados.forEach(pedido => {
+    const nomeCliente = clientesMap[pedido.cliente_id] || '';
     const div = document.createElement('div');
     div.className = 'pedido-item';
     div.innerHTML = `
-      <p>Pedido #${pedido.id} - R$ ${pedido.total}</p>
+      <div class="pedido-item-info">
+        <div class="avatar-iniciais">${iniciais(nomeCliente)}</div>
+        <p>Pedido #${pedido.id} - R$ ${pedido.total}${nomeCliente ? ' - ' + nomeCliente : ''}</p>
+      </div>
       <button data-id="${pedido.id}" class="btn-avancar">Avançar status</button>
     `;
     container.appendChild(div);
@@ -84,10 +105,12 @@ document.querySelectorAll('.aba-btn').forEach(btn => {
   });
 });
 
+carregarClientesMap().then(renderizarPedidos);
 carregarPedidos();
 
 const socket = io('http://localhost:3000');
-socket.on('novo-pedido', (pedido) => {
+socket.on('novo-pedido', async (pedido) => {
+  await carregarClientesMap();
   todosPedidos.push(pedido);
   renderizarPedidos();
 });
