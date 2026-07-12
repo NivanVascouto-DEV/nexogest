@@ -16,15 +16,15 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { tipo, categoria, descricao, valor, forma_pagamento } = req.body;
+        const { tipo, categoria, descricao, valor, forma_pagamento, data_vencimento } = req.body;
 
         if (!CATEGORIAS_VALIDAS.includes(categoria)) {
             return res.status(400).json({ mensagem: 'Categoria inválida' });
         }
 
         const resultado = await pool.query(
-            'INSERT INTO lancamentos_financeiros (tipo, categoria, descricao, valor, forma_pagamento) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [tipo, categoria, descricao, valor, forma_pagamento]
+            'INSERT INTO lancamentos_financeiros (tipo, categoria, descricao, valor, forma_pagamento, data_vencimento) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+            [tipo, categoria, descricao, valor, forma_pagamento, data_vencimento]
         );
         res.json(resultado.rows[0]);
     } catch (erro) {
