@@ -41,4 +41,16 @@ router.get('/dre', async (req, res) => {
     }
 });
 
+router.get('/pagamentos', async (req, res) => {
+    try {
+        const resultado = await pool.query(
+            'SELECT forma_pagamento, SUM(total) AS total FROM pedidos GROUP BY forma_pagamento'
+        );
+        res.json(resultado.rows);
+    } catch (erro) {
+        console.error(erro);
+        res.status(500).json({ mensagem: 'Erro ao calcular totais por pagamento' });
+    }
+});
+
 module.exports = router;
