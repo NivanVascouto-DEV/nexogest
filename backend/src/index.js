@@ -16,8 +16,9 @@ app.get('/teste-db', async (req, res) => {
 const produtosRoutes = require('./routes/produtos');
 app.use('/produtos', produtosRoutes);
 
+const verificarToken = require('./middlewares/auth');
 const clientesRoutes = require('./routes/clientes');
-app.use('/clientes', clientesRoutes);
+app.use('/clientes', verificarToken, clientesRoutes);
 
 const pedidosRoutes = require('./routes/pedidos');
 app.use('/pedidos', pedidosRoutes);
