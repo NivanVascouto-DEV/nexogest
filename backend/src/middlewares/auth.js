@@ -18,4 +18,13 @@ function verificarToken(req, res, next) {
     }
 }
 
-module.exports = verificarToken;
+function verificarPapel(papeisPermitidos) {
+    return (req, res, next) => {
+        if (!papeisPermitidos.includes(req.usuario.papel)) {
+            return res.status(403).json({ mensagem: 'Acesso negado para esse papel' });
+        }
+        next();
+    };
+}
+
+module.exports = { verificarToken, verificarPapel };

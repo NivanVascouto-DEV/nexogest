@@ -13,30 +13,31 @@ app.get('/teste-db', async (req, res) => {
   res.send(resultado.rows);
 });
 
-const produtosRoutes = require('./routes/produtos');
-app.use('/produtos', produtosRoutes);
+const { verificarToken, verificarPapel } = require('./middlewares/auth');
 
-const verificarToken = require('./middlewares/auth');
+const produtosRoutes = require('./routes/produtos');
+app.use('/produtos', verificarToken, produtosRoutes);
+
 const clientesRoutes = require('./routes/clientes');
 app.use('/clientes', verificarToken, clientesRoutes);
 
 const pedidosRoutes = require('./routes/pedidos');
-app.use('/pedidos', pedidosRoutes);
+app.use('/pedidos', verificarToken, pedidosRoutes);
 
 const itensPedidoRoutes = require('./routes/itensPedido');
-app.use('/itens-pedido', itensPedidoRoutes);
+app.use('/itens-pedido', verificarToken, itensPedidoRoutes);
 
 const insumosRoutes = require('./routes/insumos');
-app.use('/insumos', insumosRoutes);
+app.use('/insumos', verificarToken, verificarPapel(['admin', 'contador']), insumosRoutes);
 
 const fichaTecnicaRoutes = require('./routes/fichaTecnica');
-app.use('/ficha-tecnica', fichaTecnicaRoutes);
+app.use('/ficha-tecnica', verificarToken, verificarPapel(['admin', 'contador']), fichaTecnicaRoutes);
 
 const lancamentosRoutes = require('./routes/lancamentosFinanceiros');
-app.use('/lancamentos-financeiros', lancamentosRoutes);
+app.use('/lancamentos-financeiros', verificarToken, verificarPapel(['admin', 'contador']), lancamentosRoutes);
 
 const usuariosRoutes = require('./routes/usuarios');
-app.use('/usuarios', usuariosRoutes);
+app.use('/usuarios', verificarToken, verificarPapel(['admin']), usuariosRoutes);
 
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
