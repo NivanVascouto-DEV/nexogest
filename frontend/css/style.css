@@ -353,6 +353,7 @@ button:hover {
 .pedido-item > div {
   display: flex;
   gap: 6px;
+  flex-wrap: wrap;
 }
 
 .pedido-item button {

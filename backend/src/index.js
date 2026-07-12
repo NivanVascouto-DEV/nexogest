@@ -55,6 +55,7 @@ app.use('/relatorios', verificarToken, verificarPapel(['admin', 'contador']), re
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
-servidorHttp.listen(3000, () => {
-    console.log('Servidor rodando na porta 3000');
+const PORTA = process.env.PORT || 3000;
+servidorHttp.listen(PORTA, () => {
+    console.log('Servidor rodando na porta ' + PORTA);
 });

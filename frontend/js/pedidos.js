@@ -56,7 +56,11 @@ function renderizarPedidos() {
         <div class="avatar-iniciais">${iniciais(nomeCliente)}</div>
         <p>Pedido #${pedido.id} - R$ ${pedido.total}${nomeCliente ? ' - ' + nomeCliente : ''}</p>
       </div>
-      <button data-id="${pedido.id}" class="btn-avancar">Avançar status</button>
+      <div>
+        <button data-id="${pedido.id}" class="btn-avancar">Avançar status</button>
+        <button data-id="${pedido.id}" class="btn-imprimir-cozinha">Imprimir via da cozinha</button>
+        <button data-id="${pedido.id}" class="btn-imprimir-cliente">Imprimir via do cliente</button>
+      </div>
     `;
     container.appendChild(div);
   });
@@ -64,6 +68,41 @@ function renderizarPedidos() {
   document.querySelectorAll('.btn-avancar').forEach(btn => {
     btn.addEventListener('click', () => mudarStatus(parseInt(btn.dataset.id)));
   });
+
+  document.querySelectorAll('.btn-imprimir-cozinha').forEach(btn => {
+    btn.addEventListener('click', () => imprimir(parseInt(btn.dataset.id), 'estabelecimento', btn));
+  });
+
+  document.querySelectorAll('.btn-imprimir-cliente').forEach(btn => {
+    btn.addEventListener('click', () => imprimir(parseInt(btn.dataset.id), 'cliente', btn));
+  });
+}
+
+async function imprimir(pedidoId, tipo, btn) {
+  const largura = localStorage.getItem('config_largura') || '80';
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Imprimindo...';
+
+  try {
+    const resposta = await fetch(`http://localhost:3000/pedidos/${pedidoId}/imprimir/${tipo}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ largura: parseInt(largura) })
+    });
+    const dados = await resposta.json();
+    if (!resposta.ok) {
+      alert(dados.mensagem || 'Não foi possível imprimir. Verifique a impressora.');
+    }
+  } catch (erro) {
+    alert('Não foi possível imprimir. Verifique a conexão com o servidor.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+  }
 }
 
 async function mudarStatus(id) {
