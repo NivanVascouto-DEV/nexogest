@@ -39,6 +39,9 @@ app.use('/lancamentos-financeiros', verificarToken, verificarPapel(['admin', 'co
 const usuariosRoutes = require('./routes/usuarios');
 app.use('/usuarios', verificarToken, verificarPapel(['admin']), usuariosRoutes);
 
+const relatoriosRoutes = require('./routes/relatorios');
+app.use('/relatorios', verificarToken, verificarPapel(['admin', 'contador']), relatoriosRoutes);
+
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
