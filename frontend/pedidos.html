@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>NexoGest - Pedidos</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="pedidos-container">
+    <h1>Pedidos</h1>
+
+    <div class="abas">
+      <button class="aba-btn" data-status="pendente">Pendente</button>
+      <button class="aba-btn" data-status="preparando">Preparando</button>
+      <button class="aba-btn" data-status="saiu_para_entrega">Em rota</button>
+      <button class="aba-btn" data-status="entregue">Finalizados</button>
+    </div>
+
+    <div id="listaPedidos"></div>
+  </div>
+
+  <script src="js/menu.js"></script>
+  <script src="js/pedidos.js"></script>
+</body>
+</html>

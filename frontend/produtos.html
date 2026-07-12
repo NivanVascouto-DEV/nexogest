@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>NexoGest - Produtos</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="produtos-container">
+    <h1>Cardápio</h1>
+
+    <div class="form-produto">
+      <input type="text" id="nomeProduto" placeholder="Nome do produto">
+      <input type="number" id="precoProduto" placeholder="Preço" step="0.01">
+      <input type="number" id="codigoProduto" placeholder="Código">
+      <select id="canalVenda">
+        <option value="convencional">Convencional</option>
+        <option value="delivery">Delivery</option>
+      </select>
+      <select id="unidadeVenda">
+        <option value="unidade">Unidade</option>
+        <option value="kg">Kg</option>
+        <option value="pacote">Pacote</option>
+      </select>
+      <label class="checkbox-label">
+        <input type="checkbox" id="controlaEstoque">
+        Controla estoque
+      </label>
+      <button id="btnSalvarProduto">Adicionar produto</button>
+    </div>
+
+    <div id="listaProdutosGrid" class="produtos-grid"></div>
+  </div>
+
+  <script src="js/menu.js"></script>
+  <script src="js/produtos.js"></script>
+
+</body>
+</html>

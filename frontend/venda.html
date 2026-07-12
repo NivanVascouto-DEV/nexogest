@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>NexoGest - Venda</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="venda-container">
+    <h1>Novo pedido</h1>
+
+    <label for="telefoneCliente">Telefone do cliente</label>
+    <input type="text" id="telefoneCliente" placeholder="11999999999">
+    <div id="listaProdutos" class="produtos-grid"></div>
+
+    <div class="resumo-pedido">
+      <p>Total: <span id="totalPedido">R$ 0,00</span></p>
+      <button id="btnFinalizar">Finalizar pedido</button>
+    </div>
+  </div>
+
+  <script src="js/menu.js"></script>
+  <script src="js/venda.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>NexoGest - Financeiro</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="produtos-container">
+    <h1>Financeiro</h1>
+
+    <div class="metricas-grid" id="metricasDRE"></div>
+    <div class="metricas-grid" id="metricasPagamento"></div>
+
+    <div class="form-produto">
+      <h3>Nova despesa</h3>
+      <input type="text" id="descricaoDespesa" placeholder="Descrição">
+      <select id="categoriaDespesa">
+        <option value="pessoal">Pessoal</option>
+        <option value="administrativa">Administrativa</option>
+        <option value="marketing">Marketing</option>
+        <option value="tributos">Tributos</option>
+        <option value="financeira">Financeira</option>
+      </select>
+      <input type="number" id="valorDespesa" placeholder="Valor" step="0.01">
+      <select id="formaPagamentoDespesa">
+        <option value="dinheiro">Dinheiro</option>
+        <option value="pix">Pix</option>
+        <option value="cartao">Cartão</option>
+      </select>
+      <label>Data de vencimento</label>
+      <input type="date" id="vencimentoDespesa">
+      <button id="btnSalvarDespesa">Lançar despesa</button>
+    </div>
+
+    <h3>Despesas lançadas</h3>
+    <div id="listaDespesas"></div>
+  </div>
+
+  <script src="js/menu.js"></script>
+  <script src="js/financeiro.js"></script>
+</body>
+</html>
