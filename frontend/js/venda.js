@@ -30,7 +30,7 @@ function atualizarTotal() {
   document.getElementById('totalPedido').textContent = 'R$ ' + total.toFixed(2);
 }
 
-async function buscarOuCriarCliente(telefone) {
+async function buscarOuCriarCliente(nome, telefone, endereco) {
   const resposta = await fetch('http://localhost:3000/clientes', {
     headers: { 'Authorization': 'Bearer ' + token }
   });
@@ -48,7 +48,7 @@ async function buscarOuCriarCliente(telefone) {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + token
     },
-    body: JSON.stringify({ nome: 'Cliente', telefone: telefone })
+    body: JSON.stringify({ nome: nome || 'Cliente', telefone: telefone, endereco: endereco })
   });
 
   const novoCliente = await respostaNovoCliente.json();
@@ -57,8 +57,10 @@ async function buscarOuCriarCliente(telefone) {
 
 document.getElementById('btnFinalizar').addEventListener('click', async () => {
   const total = pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
+  const nome = document.getElementById('nomeCliente').value;
   const telefone = document.getElementById('telefoneCliente').value;
-  const clienteId = await buscarOuCriarCliente(telefone);
+  const endereco = document.getElementById('enderecoCliente').value;
+  const clienteId = await buscarOuCriarCliente(nome, telefone, endereco);
 
   const respostaPedido = await fetch('http://localhost:3000/pedidos', {
     method: 'POST',
@@ -97,5 +99,8 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
 
   alert('Pedido finalizado com sucesso!');
   pedidoAtual = [];
+  document.getElementById('nomeCliente').value = '';
+  document.getElementById('telefoneCliente').value = '';
+  document.getElementById('enderecoCliente').value = '';
   atualizarTotal();
 });

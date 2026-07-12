@@ -19,6 +19,7 @@ router.post('/', async (req, res) => {
             'INSERT INTO pedidos (cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
             [cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes]
         );
+        req.app.get('io').emit('novo-pedido', resultado.rows[0]);
         res.json(resultado.rows[0]);
     } catch (erro) {
         console.error(erro);

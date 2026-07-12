@@ -75,10 +75,19 @@ async function mudarStatus(id) {
 }
 
 document.querySelectorAll('.aba-btn').forEach(btn => {
+  if (btn.dataset.status === abaAtual) btn.classList.add('aba-ativa');
   btn.addEventListener('click', () => {
     abaAtual = btn.dataset.status;
+    document.querySelectorAll('.aba-btn').forEach(b => b.classList.remove('aba-ativa'));
+    btn.classList.add('aba-ativa');
     renderizarPedidos();
   });
 });
 
 carregarPedidos();
+
+const socket = io('http://localhost:3000');
+socket.on('novo-pedido', (pedido) => {
+  todosPedidos.push(pedido);
+  renderizarPedidos();
+});

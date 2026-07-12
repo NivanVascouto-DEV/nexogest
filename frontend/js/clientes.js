@@ -13,10 +13,18 @@ function carregarClientes() {
         const div = document.createElement('div');
         div.className = 'pedido-item';
         div.innerHTML = `
-          <p>${cliente.nome} - ${cliente.telefone}</p>
-          <button data-id="${cliente.id}" class="btn-excluir-cliente">Excluir</button>
+          <p>${cliente.nome} - ${cliente.telefone}${cliente.endereco ? ' - ' + cliente.endereco : ''}</p>
+          <div>
+            <button data-id="${cliente.id}" class="btn-editar-cliente">Editar</button>
+            <button data-id="${cliente.id}" class="btn-excluir-cliente">Excluir</button>
+          </div>
         `;
         container.appendChild(div);
+      });
+
+      document.querySelectorAll('.btn-editar-cliente').forEach(btn => {
+        const cliente = clientes.find(c => c.id === parseInt(btn.dataset.id));
+        btn.addEventListener('click', () => editarCliente(cliente));
       });
 
       document.querySelectorAll('.btn-excluir-cliente').forEach(btn => {
@@ -25,13 +33,16 @@ function carregarClientes() {
     });
 }
 
-document.getElementById('btnSalvarCliente').addEventListener('click', async () => {
-  const nome = document.getElementById('nomeCliente').value;
-  const telefone = document.getElementById('telefoneCliente').value;
-  const endereco = document.getElementById('enderecoCliente').value;
+async function editarCliente(cliente) {
+  const nome = prompt('Nome:', cliente.nome);
+  if (nome === null) return;
+  const telefone = prompt('Telefone:', cliente.telefone);
+  if (telefone === null) return;
+  const endereco = prompt('Endereço:', cliente.endereco || '');
+  if (endereco === null) return;
 
-  await fetch('http://localhost:3000/clientes', {
-    method: 'POST',
+  await fetch('http://localhost:3000/clientes/' + cliente.id, {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + token
@@ -39,12 +50,8 @@ document.getElementById('btnSalvarCliente').addEventListener('click', async () =
     body: JSON.stringify({ nome, telefone, endereco })
   });
 
-  document.getElementById('nomeCliente').value = '';
-  document.getElementById('telefoneCliente').value = '';
-  document.getElementById('enderecoCliente').value = '';
-
   carregarClientes();
-});
+}
 
 async function excluirCliente(id) {
   await fetch('http://localhost:3000/clientes/' + id, {

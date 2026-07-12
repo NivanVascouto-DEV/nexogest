@@ -2,6 +2,14 @@ const express = require('express');
 const pool = require('./db');
 const app = express();
 const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
+
+const servidorHttp = http.createServer(app);
+const io = new Server(servidorHttp, {
+  cors: { origin: '*' }
+});
+app.set('io', io);
 
 app.use(express.json());
 app.use(cors());
@@ -47,6 +55,6 @@ app.use('/relatorios', verificarToken, verificarPapel(['admin', 'contador']), re
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
-app.listen(3000, () => {
+servidorHttp.listen(3000, () => {
     console.log('Servidor rodando na porta 3000');
 });
