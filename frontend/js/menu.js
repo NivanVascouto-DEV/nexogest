@@ -100,3 +100,7 @@ const corSalva = localStorage.getItem('config_cor');
 if (corSalva) {
   document.documentElement.style.setProperty('--cor-destaque', corSalva);
 }
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}

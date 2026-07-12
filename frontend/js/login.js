@@ -1,3 +1,7 @@
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+
 document.getElementById('btnEntrar').addEventListener('click', () => {
   const login = document.getElementById('login').value;
   const senha = document.getElementById('senha').value;

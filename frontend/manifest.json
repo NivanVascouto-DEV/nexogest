@@ -1,0 +1,22 @@
+{
+  "name": "NexoGest",
+  "short_name": "NexoGest",
+  "start_url": "login.html",
+  "display": "standalone",
+  "background_color": "#F4F3EF",
+  "theme_color": "#D96C3F",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
