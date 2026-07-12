@@ -55,6 +55,17 @@ app.use('/relatorios', verificarToken, verificarPapel(['admin', 'contador']), re
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 
+const { testarImpressora } = require('./impressao');
+app.get('/impressora/testar', verificarToken, verificarPapel(['admin', 'contador']), async (req, res) => {
+    try {
+        const resultado = await testarImpressora();
+        res.json({ conectada: true, ...resultado, mensagem: 'Impressora respondeu com sucesso.' });
+    } catch (erro) {
+        const status = erro.impressoraNaoConfigurada ? 503 : 500;
+        res.status(status).json({ conectada: false, mensagem: erro.message });
+    }
+});
+
 const PORTA = process.env.PORT || 3000;
 servidorHttp.listen(PORTA, () => {
     console.log('Servidor rodando na porta ' + PORTA);
