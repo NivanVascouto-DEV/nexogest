@@ -18,7 +18,7 @@ function carregarClientes() {
 
       clientes.forEach(cliente => {
         const div = document.createElement('div');
-        div.className = 'pedido-item';
+        div.className = 'linha-simples';
         div.innerHTML = `
           <div class="pedido-item-info">
             <div class="avatar-iniciais">${iniciais(cliente.nome)}</div>

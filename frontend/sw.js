@@ -1,4 +1,4 @@
-const CACHE_NOME = 'nexogest-v2';
+const CACHE_NOME = 'nexogest-v3';
 const ARQUIVOS_ESTATICOS = [
   'login.html',
   'venda.html',
@@ -30,7 +30,13 @@ const ARQUIVOS_ESTATICOS = [
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NOME).then((cache) => cache.addAll(ARQUIVOS_ESTATICOS))
+    caches.open(CACHE_NOME).then((cache) => Promise.all(
+      // cache.addAll() por si so pode reaproveitar uma resposta ja
+      // guardada no cache HTTP do navegador (nao no Cache Storage do
+      // service worker). Usamos cache: 'reload' em cada fetch para
+      // garantir que o que entra no Cache Storage vem sempre da rede.
+      ARQUIVOS_ESTATICOS.map((url) => fetch(url, { cache: 'reload' }).then((resposta) => cache.put(url, resposta)))
+    ))
   );
   self.skipWaiting();
 });

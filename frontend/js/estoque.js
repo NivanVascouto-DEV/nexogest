@@ -20,7 +20,7 @@ fetch('http://localhost:3000/produtos', {
       const baixo = quantidade <= LIMITE_ESTOQUE_BAIXO;
 
       const div = document.createElement('div');
-      div.className = 'pedido-item';
+      div.className = 'linha-simples';
       div.innerHTML = `
         <p>${produto.nome}</p>
         <span class="badge-estoque ${baixo ? 'badge-baixo' : 'badge-ok'}">${quantidade} ${produto.unidade_venda}</span>

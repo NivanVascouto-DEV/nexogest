@@ -59,9 +59,13 @@ function carregarDespesas() {
 
       despesas.forEach(d => {
         const div = document.createElement('div');
-        div.className = 'pedido-item';
+        div.className = 'despesa-linha';
         div.innerHTML = `
-          <p>${d.descricao} - R$ ${d.valor} <span class="ts-small">vence em ${formatarData(d.data_vencimento)}</span></p>
+          <div>
+            <div style="font-size:12.5px; font-weight:500;">${d.descricao}</div>
+            <div class="ts-small">${d.categoria} · vence em ${formatarData(d.data_vencimento)}</div>
+          </div>
+          <div class="despesa-valor">R$ ${d.valor}</div>
         `;
         container.appendChild(div);
       });

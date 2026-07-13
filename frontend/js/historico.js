@@ -23,7 +23,7 @@ function renderizarHistorico(pedidos) {
 
   pedidos.forEach(pedido => {
     const div = document.createElement('div');
-    div.className = 'pedido-item';
+    div.className = 'linha-simples';
     div.innerHTML = `
       <p>Pedido #${pedido.id} - R$ ${pedido.total} <span class="ts-small">${formatarData(pedido.data_pedido)}</span></p>
     `;

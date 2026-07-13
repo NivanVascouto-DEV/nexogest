@@ -25,14 +25,37 @@ function adicionarAoPedido(produto) {
   atualizarTotal();
 }
 
+function calcularTotal() {
+  return pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
+}
+
+function agruparItens() {
+  const mapa = {};
+  pedidoAtual.forEach(produto => {
+    if (!mapa[produto.id]) mapa[produto.id] = { nome: produto.nome, preco: parseFloat(produto.preco), quantidade: 0 };
+    mapa[produto.id].quantidade += 1;
+  });
+  return Object.values(mapa);
+}
+
 function atualizarTotal() {
-  const total = pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
-  document.getElementById('totalPedido').textContent = 'R$ ' + total.toFixed(2);
+  const itens = agruparItens();
+  const total = calcularTotal();
+  const resumo = document.getElementById('resumoCaixa');
+
+  if (itens.length === 0) {
+    resumo.innerHTML = '';
+  } else {
+    resumo.innerHTML = itens.map(item => `
+      <div class="resumo-linha"><span>${item.nome}${item.quantidade > 1 ? ' x' + item.quantidade : ''}</span><span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span></div>
+    `).join('') + `<div class="resumo-total"><span>Total</span><span class="valor">R$ ${total.toFixed(2)}</span></div>`;
+  }
+
   atualizarTroco();
 }
 
 function atualizarTroco() {
-  const total = pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
+  const total = calcularTotal();
   const valorRecebido = parseFloat(document.getElementById('valorRecebido').value);
   const resultado = document.getElementById('resultadoTroco');
 
@@ -80,7 +103,7 @@ async function buscarOuCriarCliente(nome, telefone, endereco) {
 }
 
 document.getElementById('btnFinalizar').addEventListener('click', async () => {
-  const total = pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
+  const total = calcularTotal();
   const nome = document.getElementById('nomeCliente').value;
   const telefone = document.getElementById('telefoneCliente').value;
   const endereco = document.getElementById('enderecoCliente').value;

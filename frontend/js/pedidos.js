@@ -82,7 +82,7 @@ function renderizarPedidos() {
       <div class="pedido-item-topo">
         <div class="pedido-item-info">
           <div class="avatar-iniciais">${iniciais(nomeCliente)}</div>
-          <p>Pedido #${pedido.id} - R$ ${pedido.total}${nomeCliente ? ' - ' + nomeCliente : ''}</p>
+          <p><span class="pedido-tipo">${pedido.canal_venda || '-'}</span>Pedido #${pedido.id} - R$ ${pedido.total}${nomeCliente ? ' - ' + nomeCliente : ''}</p>
         </div>
       </div>
       ${pedido.observacoes && pedido.observacoes.trim() ? `
