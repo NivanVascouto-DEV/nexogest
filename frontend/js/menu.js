@@ -1,3 +1,10 @@
+const LOGO_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M4 11.5h16"/><path d="M12 3c-1 1-1 2 0 3s1 2 0 3"/></svg>';
+
+function formatarDataPortugues(data) {
+  const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  return `${data.getDate()} de ${meses[data.getMonth()]}`;
+}
+
 const ICONES_SECAO = {
   carrinho: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M2.5 3h2l2.6 12.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 8H6"/></svg>',
   prancheta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/><path d="M9 11h6M9 15h6"/></svg>',
@@ -52,7 +59,11 @@ function criarMenu() {
 
   const logo = document.createElement('div');
   logo.className = 'sidebar-logo';
-  logo.innerHTML = '<div class="logo-quadrado"></div><span>NexoGest</span>';
+  logo.innerHTML = `
+    <div class="logo-quadrado">${LOGO_SVG}</div>
+    <span>NexoGest</span>
+    <span class="sidebar-data">${formatarDataPortugues(new Date())}</span>
+  `;
   sidebar.appendChild(logo);
 
   const linksContainer = document.createElement('div');

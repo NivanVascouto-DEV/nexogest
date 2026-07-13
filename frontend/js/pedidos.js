@@ -1,3 +1,5 @@
+const ICONE_OBSERVACAO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>';
+
 const token = localStorage.getItem('token');
 let todosPedidos = [];
 let clientesMap = {};
@@ -22,7 +24,7 @@ async function carregarClientesMap() {
   });
   const clientes = await resposta.json();
   clientesMap = {};
-  clientes.forEach(c => { clientesMap[c.id] = c.nome; });
+  clientes.forEach(c => { clientesMap[c.id] = c; });
 }
 
 function carregarPedidos() {
@@ -36,7 +38,31 @@ function carregarPedidos() {
     });
 }
 
+function renderizarStats() {
+  const container = document.getElementById('statsPedidos');
+  const contagem = {
+    pendente: todosPedidos.filter(p => p.status === 'pendente').length,
+    preparando: todosPedidos.filter(p => p.status === 'preparando').length,
+    saiu_para_entrega: todosPedidos.filter(p => p.status === 'saiu_para_entrega').length
+  };
+  container.innerHTML = `
+    <div class="stat-card"><p class="stat-numero">${contagem.pendente}</p><p class="stat-rotulo">Pendentes</p></div>
+    <div class="stat-card"><p class="stat-numero">${contagem.preparando}</p><p class="stat-rotulo">Preparo</p></div>
+    <div class="stat-card"><p class="stat-numero">${contagem.saiu_para_entrega}</p><p class="stat-rotulo">Prontos</p></div>
+  `;
+}
+
+function atualizarContadoresAbas() {
+  document.querySelectorAll('.aba-contador').forEach((span) => {
+    const status = span.dataset.contador;
+    span.textContent = todosPedidos.filter((p) => p.status === status).length;
+  });
+}
+
 function renderizarPedidos() {
+  renderizarStats();
+  atualizarContadoresAbas();
+
   const container = document.getElementById('listaPedidos');
   container.innerHTML = '';
 
@@ -48,18 +74,28 @@ function renderizarPedidos() {
   }
 
   filtrados.forEach(pedido => {
-    const nomeCliente = clientesMap[pedido.cliente_id] || '';
+    const cliente = clientesMap[pedido.cliente_id];
+    const nomeCliente = cliente ? cliente.nome : '';
     const div = document.createElement('div');
-    div.className = 'pedido-item';
+    div.className = 'pedido-card';
     div.innerHTML = `
-      <div class="pedido-item-info">
-        <div class="avatar-iniciais">${iniciais(nomeCliente)}</div>
-        <p>Pedido #${pedido.id} - R$ ${pedido.total}${nomeCliente ? ' - ' + nomeCliente : ''}</p>
+      <div class="pedido-item-topo">
+        <div class="pedido-item-info">
+          <div class="avatar-iniciais">${iniciais(nomeCliente)}</div>
+          <p>Pedido #${pedido.id} - R$ ${pedido.total}${nomeCliente ? ' - ' + nomeCliente : ''}</p>
+        </div>
       </div>
-      <div>
-        <button data-id="${pedido.id}" class="btn-avancar">Avançar status</button>
+      ${pedido.observacoes && pedido.observacoes.trim() ? `
+      <div class="observacao-pedido">
+        ${ICONE_OBSERVACAO}
+        <span>${pedido.observacoes}</span>
+      </div>` : ''}
+      <div class="pedido-item-acoes">
+        <button data-id="${pedido.id}" class="btn-avancar">Avançar</button>
+        <button data-id="${pedido.id}" class="btn-editar">Editar</button>
         <button data-id="${pedido.id}" class="btn-imprimir-cozinha">Imprimir via da cozinha</button>
         <button data-id="${pedido.id}" class="btn-imprimir-cliente">Imprimir via do cliente</button>
+        <button data-id="${pedido.id}" class="btn-cancelar">Cancelar</button>
       </div>
     `;
     container.appendChild(div);
@@ -67,6 +103,14 @@ function renderizarPedidos() {
 
   document.querySelectorAll('.btn-avancar').forEach(btn => {
     btn.addEventListener('click', () => mudarStatus(parseInt(btn.dataset.id)));
+  });
+
+  document.querySelectorAll('.btn-editar').forEach(btn => {
+    btn.addEventListener('click', () => editarPedido(parseInt(btn.dataset.id)));
+  });
+
+  document.querySelectorAll('.btn-cancelar').forEach(btn => {
+    btn.addEventListener('click', () => cancelarPedido(parseInt(btn.dataset.id)));
   });
 
   document.querySelectorAll('.btn-imprimir-cozinha').forEach(btn => {
@@ -105,16 +149,8 @@ async function imprimir(pedidoId, tipo, btn) {
   }
 }
 
-async function mudarStatus(id) {
-  const pedido = todosPedidos.find(p => p.id === id);
-  const novoStatus = proximoStatus[pedido.status];
-
-  if (!novoStatus) {
-    alert('Este pedido já está no status final.');
-    return;
-  }
-
-  await fetch('http://localhost:3000/pedidos/' + id, {
+async function salvarPedido(pedido, campos) {
+  await fetch('http://localhost:3000/pedidos/' + pedido.id, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -124,13 +160,67 @@ async function mudarStatus(id) {
       cliente_id: pedido.cliente_id,
       usuario_id: pedido.usuario_id,
       canal_venda: pedido.canal_venda,
-      status: novoStatus,
+      status: pedido.status,
       forma_pagamento: pedido.forma_pagamento,
       total: pedido.total,
-      observacoes: pedido.observacoes
+      observacoes: pedido.observacoes,
+      ...campos
     })
   });
+}
 
+async function mudarStatus(id) {
+  const pedido = todosPedidos.find(p => p.id === id);
+  const novoStatus = proximoStatus[pedido.status];
+
+  if (!novoStatus) {
+    alert('Este pedido já está no status final.');
+    return;
+  }
+
+  await salvarPedido(pedido, { status: novoStatus });
+  carregarPedidos();
+}
+
+async function cancelarPedido(id) {
+  const pedido = todosPedidos.find(p => p.id === id);
+  if (!confirm(`Cancelar o pedido #${id}?`)) return;
+
+  await salvarPedido(pedido, { status: 'cancelado' });
+  carregarPedidos();
+}
+
+// Edicao simples: dados do cliente + forma de pagamento + observacoes do
+// pedido. Editar os itens do pedido em si fica para uma tela dedicada futura.
+async function editarPedido(id) {
+  const pedido = todosPedidos.find(p => p.id === id);
+  const cliente = clientesMap[pedido.cliente_id] || {};
+
+  const nome = prompt('Nome do cliente:', cliente.nome || '');
+  if (nome === null) return;
+  const telefone = prompt('Telefone:', cliente.telefone || '');
+  if (telefone === null) return;
+  const endereco = prompt('Endereço:', cliente.endereco || '');
+  if (endereco === null) return;
+  const formaPagamento = prompt('Forma de pagamento (dinheiro/pix/cartao):', pedido.forma_pagamento || '');
+  if (formaPagamento === null) return;
+  const observacoes = prompt('Observações:', pedido.observacoes || '');
+  if (observacoes === null) return;
+
+  if (pedido.cliente_id) {
+    await fetch('http://localhost:3000/clientes/' + pedido.cliente_id, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({ nome, telefone, endereco })
+    });
+  }
+
+  await salvarPedido(pedido, { forma_pagamento: formaPagamento, observacoes });
+
+  await carregarClientesMap();
   carregarPedidos();
 }
 

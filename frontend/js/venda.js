@@ -28,7 +28,31 @@ function adicionarAoPedido(produto) {
 function atualizarTotal() {
   const total = pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
   document.getElementById('totalPedido').textContent = 'R$ ' + total.toFixed(2);
+  atualizarTroco();
 }
+
+function atualizarTroco() {
+  const total = pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
+  const valorRecebido = parseFloat(document.getElementById('valorRecebido').value);
+  const resultado = document.getElementById('resultadoTroco');
+
+  if (isNaN(valorRecebido)) {
+    resultado.textContent = '';
+    resultado.className = 'troco-resultado';
+    return;
+  }
+
+  const diferenca = valorRecebido - total;
+  if (diferenca < 0) {
+    resultado.textContent = `Falta R$ ${Math.abs(diferenca).toFixed(2)}`;
+    resultado.className = 'troco-resultado troco-faltando';
+  } else {
+    resultado.textContent = `Troco: R$ ${diferenca.toFixed(2)}`;
+    resultado.className = 'troco-resultado troco-ok';
+  }
+}
+
+document.getElementById('valorRecebido').addEventListener('input', atualizarTroco);
 
 async function buscarOuCriarCliente(nome, telefone, endereco) {
   const resposta = await fetch('http://localhost:3000/clientes', {
@@ -60,6 +84,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   const nome = document.getElementById('nomeCliente').value;
   const telefone = document.getElementById('telefoneCliente').value;
   const endereco = document.getElementById('enderecoCliente').value;
+  const observacoes = document.getElementById('observacoesPedido').value;
   const clienteId = await buscarOuCriarCliente(nome, telefone, endereco);
 
   const respostaPedido = await fetch('http://localhost:3000/pedidos', {
@@ -75,7 +100,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
       status: 'pendente',
       forma_pagamento: 'pix',
       total: total,
-      observacoes: ''
+      observacoes: observacoes
     })
   });
 
@@ -102,5 +127,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   document.getElementById('nomeCliente').value = '';
   document.getElementById('telefoneCliente').value = '';
   document.getElementById('enderecoCliente').value = '';
+  document.getElementById('observacoesPedido').value = '';
+  document.getElementById('valorRecebido').value = '';
   atualizarTotal();
 });

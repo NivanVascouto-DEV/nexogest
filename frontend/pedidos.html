@@ -5,17 +5,19 @@
   <title>NexoGest - Pedidos</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#D96C3F">
+  <meta name="theme-color" content="#D4537E">
 </head>
 <body>
   <div class="pedidos-container">
     <h1>Pedidos</h1>
 
+    <div class="stats-grid" id="statsPedidos"></div>
+
     <div class="abas">
-      <button class="aba-btn" data-status="pendente">Pendente</button>
-      <button class="aba-btn" data-status="preparando">Preparando</button>
-      <button class="aba-btn" data-status="saiu_para_entrega">Em rota</button>
-      <button class="aba-btn" data-status="entregue">Finalizados</button>
+      <button class="aba-btn" data-status="pendente">Pendente <span class="aba-contador" data-contador="pendente">0</span></button>
+      <button class="aba-btn" data-status="preparando">Preparando <span class="aba-contador" data-contador="preparando">0</span></button>
+      <button class="aba-btn" data-status="saiu_para_entrega">Em rota <span class="aba-contador" data-contador="saiu_para_entrega">0</span></button>
+      <button class="aba-btn" data-status="entregue">Finalizados <span class="aba-contador" data-contador="entregue">0</span></button>
     </div>
 
     <div id="listaPedidos"></div>

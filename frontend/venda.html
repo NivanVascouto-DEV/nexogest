@@ -5,7 +5,7 @@
   <title>NexoGest - Venda</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#D96C3F">
+  <meta name="theme-color" content="#D4537E">
 </head>
 <body>
   <div class="venda-container">
@@ -17,10 +17,22 @@
       <label for="telefoneCliente">Telefone do cliente</label>
       <input type="text" id="telefoneCliente" placeholder="11999999999">
       <label for="enderecoCliente">Endereço</label>
-      <input type="text" id="enderecoCliente" placeholder="Endereço">
+      <input type="text" id="enderecoCliente" placeholder="Rua, número - Bairro">
     </div>
 
     <div id="listaProdutos" class="produtos-grid"></div>
+
+    <div class="form-produto">
+      <h3 class="titulo-com-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><path d="M9 13h6M9 17h6"/></svg> Observações</h3>
+      <textarea id="observacoesPedido" placeholder="Ex: sem cebola, entregar após 19h"></textarea>
+    </div>
+
+    <div class="form-produto">
+      <h3>Troco</h3>
+      <label for="valorRecebido">Valor recebido</label>
+      <input type="number" id="valorRecebido" placeholder="0.00" step="0.01">
+      <p class="troco-resultado" id="resultadoTroco"></p>
+    </div>
 
     <div class="resumo-pedido">
       <p>Total: <span id="totalPedido">R$ 0,00</span></p>

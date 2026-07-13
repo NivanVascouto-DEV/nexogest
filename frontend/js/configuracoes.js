@@ -3,7 +3,7 @@ function carregarConfiguracoes() {
   const largura = localStorage.getItem('config_largura') || '80';
   const somAtivo = localStorage.getItem('config_som') !== 'false';
   const volume = localStorage.getItem('config_volume') || '70';
-  const cor = localStorage.getItem('config_cor') || '#D96C3F';
+  const cor = localStorage.getItem('config_cor') || '#D4537E';
 
   document.getElementById('temaSelect').value = tema;
   document.getElementById('larguraSelect').value = largura;
