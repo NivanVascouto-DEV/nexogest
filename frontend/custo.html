@@ -8,11 +8,11 @@
   <meta name="theme-color" content="#D4537E">
 </head>
 <body>
-  <div class="produtos-container">
-    <h1>Calculadora de custo</h1>
+  <div class="container-tela">
+    <h1>Calculadora de custo <span class="tag-papel">Admin/Contador</span></h1>
     <p class="subtitle">Monte a ficha técnica do produto para calcular o custo real.</p>
 
-    <div class="form-produto">
+    <div class="form-cadastro">
       <h3>Cadastrar insumo</h3>
       <input type="text" id="nomeInsumo" placeholder="Nome (ex: Farinha de trigo)">
       <select id="unidadeInsumo">
@@ -24,7 +24,7 @@
       <button id="btnSalvarInsumo">Adicionar insumo</button>
     </div>
 
-    <div class="form-produto">
+    <div class="form-cadastro">
       <h3>Montar ficha técnica</h3>
       <select id="selectProduto"></select>
       <select id="selectInsumo"></select>
@@ -32,8 +32,16 @@
       <button id="btnSalvarFicha">Adicionar à ficha técnica</button>
     </div>
 
-    <h3>Custo do produto selecionado</h3>
-    <div id="resultadoCusto" class="metrica-card"></div>
+    <div class="tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr><th>Insumo</th><th>Quantidade</th><th>Custo unitário</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody id="corpoFichaTecnica"></tbody>
+      </table>
+    </div>
+
+    <div class="metrica-card" id="resultadoCusto"></div>
   </div>
 
   <script src="js/menu.js"></script>

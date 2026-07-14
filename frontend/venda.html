@@ -8,11 +8,15 @@
   <meta name="theme-color" content="#D4537E">
 </head>
 <body>
-  <div class="venda-container">
+  <div class="container-tela">
     <h1>Novo pedido</h1>
 
-    <div class="form-produto">
+    <div class="secao-form">
       <h3>👤 Cliente</h3>
+      <div class="canal-toggle">
+        <button type="button" class="botao-canal ativo" data-canal="delivery" id="btnDelivery">Delivery</button>
+        <button type="button" class="botao-canal" data-canal="retirada" id="btnRetirada">Retirada</button>
+      </div>
       <label for="nomeCliente">Nome</label>
       <input type="text" id="nomeCliente" placeholder="Nome">
       <label for="telefoneCliente">Telefone</label>
@@ -21,19 +25,28 @@
       <input type="text" id="enderecoCliente" placeholder="Rua, número - Bairro">
     </div>
 
-    <div class="form-produto">
-      <h3 class="titulo-com-icone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><path d="M9 13h6M9 17h6"/></svg> Observações</h3>
-      <textarea id="observacoesPedido" placeholder="Ex: sem cebola, entregar após 19h"></textarea>
+    <div class="secao-form">
+      <h3>🛒 Adicionar item</h3>
+      <div class="linha-adicionar-item">
+        <select id="selectProduto"></select>
+        <input type="number" id="quantidadeItem" value="1" min="1">
+        <button type="button" id="btnAdicionarItem">+ Adicionar</button>
+      </div>
     </div>
 
-    <div class="form-produto">
-      <h3>🛒 Itens — clique num produto para adicionar</h3>
-      <div id="listaProdutos" class="produtos-grid"></div>
+    <div class="secao-form">
+      <h3>📋 Itens do pedido</h3>
+      <div id="listaItensPedido"><p class="ts-small">Nenhum item adicionado ainda.</p></div>
+    </div>
+
+    <div class="secao-form">
+      <h3>📝 Observações</h3>
+      <textarea id="observacoesPedido" placeholder="Ex: sem cebola, entregar após 19h"></textarea>
     </div>
 
     <div class="resumo-caixa" id="resumoCaixa"></div>
 
-    <div class="form-produto">
+    <div class="secao-form">
       <h3>💰 Troco (cálculo local, não salva no banco)</h3>
       <label for="valorRecebido">Valor recebido</label>
       <input type="number" id="valorRecebido" placeholder="0.00" step="0.01">

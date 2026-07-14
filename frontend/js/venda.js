@@ -1,52 +1,87 @@
 const token = localStorage.getItem('token');
+let produtosDisponiveis = [];
 let pedidoAtual = [];
+let canalSelecionado = 'delivery';
 
 fetch('http://localhost:3000/produtos', {
   headers: { 'Authorization': 'Bearer ' + token }
 })
   .then(resposta => resposta.json())
   .then(produtos => {
-    const container = document.getElementById('listaProdutos');
+    produtosDisponiveis = produtos;
+    const select = document.getElementById('selectProduto');
     produtos.forEach(produto => {
-      const card = document.createElement('div');
-      card.className = 'produto-card';
-      card.innerHTML = `
-        <div class="produto-imagem"></div>
-        <p class="produto-nome">${produto.nome}</p>
-        <p class="produto-preco">R$ ${produto.preco}</p>
-      `;
-      card.addEventListener('click', () => adicionarAoPedido(produto));
-      container.appendChild(card);
+      const option = document.createElement('option');
+      option.value = produto.id;
+      option.textContent = `${produto.nome} — R$ ${produto.preco}`;
+      select.appendChild(option);
     });
   });
 
-function adicionarAoPedido(produto) {
-  pedidoAtual.push(produto);
-  atualizarTotal();
+document.getElementById('btnDelivery').addEventListener('click', () => selecionarCanal('delivery'));
+document.getElementById('btnRetirada').addEventListener('click', () => selecionarCanal('retirada'));
+
+function selecionarCanal(canal) {
+  canalSelecionado = canal;
+  document.getElementById('btnDelivery').classList.toggle('ativo', canal === 'delivery');
+  document.getElementById('btnRetirada').classList.toggle('ativo', canal === 'retirada');
+}
+
+document.getElementById('btnAdicionarItem').addEventListener('click', () => {
+  const produtoId = parseInt(document.getElementById('selectProduto').value);
+  const quantidade = parseInt(document.getElementById('quantidadeItem').value) || 1;
+  const produto = produtosDisponiveis.find(p => p.id === produtoId);
+  if (!produto) return;
+
+  const existente = pedidoAtual.find(item => item.produto_id === produtoId);
+  if (existente) {
+    existente.quantidade += quantidade;
+  } else {
+    pedidoAtual.push({ produto_id: produtoId, nome: produto.nome, preco: parseFloat(produto.preco), quantidade: quantidade });
+  }
+
+  document.getElementById('quantidadeItem').value = 1;
+  atualizarListaItens();
+});
+
+function removerItem(produtoId) {
+  pedidoAtual = pedidoAtual.filter(item => item.produto_id !== produtoId);
+  atualizarListaItens();
 }
 
 function calcularTotal() {
-  return pedidoAtual.reduce((soma, item) => soma + parseFloat(item.preco), 0);
+  return pedidoAtual.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
 }
 
-function agruparItens() {
-  const mapa = {};
-  pedidoAtual.forEach(produto => {
-    if (!mapa[produto.id]) mapa[produto.id] = { nome: produto.nome, preco: parseFloat(produto.preco), quantidade: 0 };
-    mapa[produto.id].quantidade += 1;
-  });
-  return Object.values(mapa);
+function atualizarListaItens() {
+  const container = document.getElementById('listaItensPedido');
+
+  if (pedidoAtual.length === 0) {
+    container.innerHTML = '<p class="ts-small">Nenhum item adicionado ainda.</p>';
+  } else {
+    container.innerHTML = pedidoAtual.map(item => `
+      <div class="item-adicionado">
+        <span>${item.quantidade}x ${item.nome} — R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+        <button type="button" class="btn-remover-item" data-id="${item.produto_id}">✕</button>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.btn-remover-item').forEach(btn => {
+      btn.addEventListener('click', () => removerItem(parseInt(btn.dataset.id)));
+    });
+  }
+
+  atualizarResumo();
 }
 
-function atualizarTotal() {
-  const itens = agruparItens();
-  const total = calcularTotal();
+function atualizarResumo() {
   const resumo = document.getElementById('resumoCaixa');
+  const total = calcularTotal();
 
-  if (itens.length === 0) {
+  if (pedidoAtual.length === 0) {
     resumo.innerHTML = '';
   } else {
-    resumo.innerHTML = itens.map(item => `
+    resumo.innerHTML = pedidoAtual.map(item => `
       <div class="resumo-linha"><span>${item.nome}${item.quantidade > 1 ? ' x' + item.quantidade : ''}</span><span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span></div>
     `).join('') + `<div class="resumo-total"><span>Total</span><span class="valor">R$ ${total.toFixed(2)}</span></div>`;
   }
@@ -103,6 +138,11 @@ async function buscarOuCriarCliente(nome, telefone, endereco) {
 }
 
 document.getElementById('btnFinalizar').addEventListener('click', async () => {
+  if (pedidoAtual.length === 0) {
+    alert('Adicione ao menos um item ao pedido.');
+    return;
+  }
+
   const total = calcularTotal();
   const nome = document.getElementById('nomeCliente').value;
   const telefone = document.getElementById('telefoneCliente').value;
@@ -119,9 +159,9 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
     body: JSON.stringify({
       cliente_id: clienteId,
       usuario_id: parseInt(localStorage.getItem('id')),
-      canal_venda: 'convencional',
+      canal_venda: canalSelecionado,
       status: 'pendente',
-      forma_pagamento: 'pix',
+      forma_pagamento: '',
       total: total,
       observacoes: observacoes
     })
@@ -138,8 +178,8 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
       },
       body: JSON.stringify({
         pedido_id: pedidoCriado.id,
-        produto_id: item.id,
-        quantidade: 1,
+        produto_id: item.produto_id,
+        quantidade: item.quantidade,
         preco_unitario: item.preco
       })
     });
@@ -147,10 +187,11 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
 
   alert('Pedido finalizado com sucesso!');
   pedidoAtual = [];
+  selecionarCanal('delivery');
   document.getElementById('nomeCliente').value = '';
   document.getElementById('telefoneCliente').value = '';
   document.getElementById('enderecoCliente').value = '';
   document.getElementById('observacoesPedido').value = '';
   document.getElementById('valorRecebido').value = '';
-  atualizarTotal();
+  atualizarListaItens();
 });

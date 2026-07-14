@@ -13,21 +13,22 @@ function carregarHistorico() {
 }
 
 function renderizarHistorico(pedidos) {
-  const container = document.getElementById('listaHistorico');
-  container.innerHTML = '';
+  const corpo = document.getElementById('corpoHistorico');
+  corpo.innerHTML = '';
 
   if (pedidos.length === 0) {
-    container.innerHTML = '<p>Nenhuma venda encontrada.</p>';
+    corpo.innerHTML = '<tr><td colspan="3">Nenhuma venda encontrada.</td></tr>';
     return;
   }
 
   pedidos.forEach(pedido => {
-    const div = document.createElement('div');
-    div.className = 'linha-simples';
-    div.innerHTML = `
-      <p>Pedido #${pedido.id} - R$ ${pedido.total} <span class="ts-small">${formatarData(pedido.data_pedido)}</span></p>
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>#${pedido.id}</td>
+      <td>${formatarData(pedido.data_pedido)}</td>
+      <td>R$ ${pedido.total}</td>
     `;
-    container.appendChild(div);
+    corpo.appendChild(tr);
   });
 }
 

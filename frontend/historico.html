@@ -8,7 +8,7 @@
   <meta name="theme-color" content="#D4537E">
 </head>
 <body>
-  <div class="produtos-container">
+  <div class="container-tela">
     <h1>Histórico de vendas</h1>
 
     <div class="filtro-data">
@@ -18,7 +18,14 @@
       <button id="btnFiltrar">Filtrar</button>
     </div>
 
-    <div id="listaHistorico"></div>
+    <div class="tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr><th>Pedido</th><th>Data</th><th>Total</th></tr>
+        </thead>
+        <tbody id="corpoHistorico"></tbody>
+      </table>
+    </div>
   </div>
 
   <script src="js/menu.js"></script>

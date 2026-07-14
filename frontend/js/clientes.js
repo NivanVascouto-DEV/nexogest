@@ -1,35 +1,27 @@
 const token = localStorage.getItem('token');
 
-function iniciais(nome) {
-  if (!nome) return '?';
-  const partes = nome.trim().split(/\s+/);
-  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
-  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
-}
-
 function carregarClientes() {
   fetch('http://localhost:3000/clientes', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
     .then(clientes => {
-      const container = document.getElementById('listaClientes');
-      container.innerHTML = '';
+      const corpo = document.getElementById('corpoClientes');
+      corpo.innerHTML = '';
 
       clientes.forEach(cliente => {
-        const div = document.createElement('div');
-        div.className = 'linha-simples';
-        div.innerHTML = `
-          <div class="pedido-item-info">
-            <div class="avatar-iniciais">${iniciais(cliente.nome)}</div>
-            <p>${cliente.nome} - ${cliente.telefone}${cliente.endereco ? ' - ' + cliente.endereco : ''}</p>
-          </div>
-          <div>
-            <button data-id="${cliente.id}" class="btn-editar-cliente">Editar</button>
-            <button data-id="${cliente.id}" class="btn-excluir-cliente">Excluir</button>
-          </div>
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${cliente.nome}</td>
+          <td>${cliente.telefone}</td>
+          <td>
+            <div class="acoes-linha">
+              <button data-id="${cliente.id}" class="btn-editar-cliente btn-editar-linha">Editar</button>
+              <button data-id="${cliente.id}" class="btn-excluir-cliente btn-excluir-linha">Excluir</button>
+            </div>
+          </td>
         `;
-        container.appendChild(div);
+        corpo.appendChild(tr);
       });
 
       document.querySelectorAll('.btn-editar-cliente').forEach(btn => {

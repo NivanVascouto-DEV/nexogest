@@ -8,10 +8,11 @@
   <meta name="theme-color" content="#D4537E">
 </head>
 <body>
-  <div class="produtos-container">
-    <h1>Cardápio</h1>
+  <div class="container-tela">
+    <h1>Produtos</h1>
 
-    <div class="form-produto">
+    <div class="form-cadastro">
+      <h3>Novo produto</h3>
       <input type="text" id="nomeProduto" placeholder="Nome do produto">
       <input type="number" id="precoProduto" placeholder="Preço" step="0.01">
       <input type="number" id="codigoProduto" placeholder="Código">
@@ -31,11 +32,17 @@
       <button id="btnSalvarProduto">Adicionar produto</button>
     </div>
 
-    <div id="listaProdutosGrid" class="produtos-grid"></div>
+    <div class="tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr><th>Código</th><th>Nome</th><th>Unidade</th><th>Preço</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="corpoProdutos"></tbody>
+      </table>
+    </div>
   </div>
 
   <script src="js/menu.js"></script>
   <script src="js/produtos.js"></script>
-
 </body>
 </html>

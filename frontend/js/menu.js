@@ -23,7 +23,7 @@ function criarMenu() {
   const paginas = [
     { arquivo: 'venda.html', label: 'Novo pedido' },
     { arquivo: 'pedidos.html', label: 'Pedidos' },
-    { arquivo: 'produtos.html', label: 'Cardápio' },
+    { arquivo: 'produtos.html', label: 'Produtos' },
     { arquivo: 'estoque.html', label: 'Estoque' },
     { arquivo: 'clientes.html', label: 'Clientes' },
     { arquivo: 'financeiro.html', label: 'Financeiro', restrito: true },

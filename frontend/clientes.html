@@ -8,11 +8,18 @@
   <meta name="theme-color" content="#D4537E">
 </head>
 <body>
-  <div class="produtos-container">
+  <div class="container-tela">
     <h1>Clientes</h1>
     <p class="subtitle">Clientes são cadastrados automaticamente na tela de Venda.</p>
 
-    <div id="listaClientes"></div>
+    <div class="tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr><th>Nome</th><th>Telefone</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="corpoClientes"></tbody>
+      </table>
+    </div>
   </div>
 
   <script src="js/menu.js"></script>

@@ -77,6 +77,8 @@ body {
   color: var(--cor-texto);
 }
 
+/* Login */
+
 .login-body {
   display: flex;
   justify-content: center;
@@ -109,6 +111,8 @@ body {
   margin: 0 0 18px;
 }
 
+/* Campos genericos */
+
 label {
   display: block;
   font-size: 11px;
@@ -121,7 +125,7 @@ input, select {
   width: 100%;
   padding: 9px 11px;
   margin-bottom: 16px;
-  border: 0.5px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-botao);
   box-sizing: border-box;
   font-size: 12.5px;
@@ -134,7 +138,7 @@ textarea {
   width: 100%;
   padding: 9px 11px;
   margin-bottom: 16px;
-  border: 0.5px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-botao);
   box-sizing: border-box;
   font-size: 12.5px;
@@ -142,7 +146,7 @@ textarea {
   background-color: var(--cor-fundo);
   color: var(--cor-texto);
   resize: vertical;
-  min-height: 46px;
+  min-height: 60px;
 }
 
 button {
@@ -169,6 +173,19 @@ button:hover {
   margin-top: 12px;
 }
 
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--cor-texto-3);
+}
+
+.checkbox-label input {
+  width: auto;
+  margin: 0;
+}
+
 /* Estrutura com barra lateral */
 
 .app-shell {
@@ -180,7 +197,7 @@ button:hover {
 .sidebar {
   width: 150px;
   background-color: var(--cor-fundo-2);
-  border-right: 0.5px solid var(--cor-borda-suave);
+  border-right: 1px solid var(--cor-borda-suave);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -189,7 +206,7 @@ button:hover {
 .sidebar-logo {
   padding: 16px 14px;
   text-align: center;
-  border-bottom: 0.5px solid var(--cor-borda-suave);
+  border-bottom: 1px solid var(--cor-borda-suave);
 }
 
 .logo-quadrado {
@@ -252,7 +269,7 @@ button:hover {
   width: 100%;
   background-color: transparent;
   border: none;
-  border-top: 0.5px solid var(--cor-borda-suave);
+  border-top: 1px solid var(--cor-borda-suave);
   color: var(--cor-perigo);
   padding: 10px 14px;
   font-size: 11px;
@@ -269,6 +286,9 @@ button:hover {
 }
 
 .titulo-secao {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   margin: 0 0 3px;
 }
 
@@ -279,158 +299,117 @@ button:hover {
   margin: 0;
 }
 
+.tag-papel {
+  display: inline-block;
+  background-color: var(--cor-destaque-clara);
+  color: var(--cor-destaque-escura);
+  font-size: 10px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
 .subtitulo-pagina {
   font-size: 12px;
   color: var(--cor-texto-4);
   margin: 0 0 18px;
 }
 
-/* Componentes gerais das telas */
+/* Container padrao das telas */
 
-.produtos-container,
-.pedidos-container,
-.venda-container {
-  max-width: 640px;
+.container-tela {
+  max-width: 760px;
   margin: 0 auto;
 }
 
-#btnFinalizar {
-  background-color: var(--cor-sucesso-fundo);
-  color: var(--cor-sucesso);
-  border: 0.5px solid #B5D98A;
-  padding: 12px;
+/* Tabelas */
+
+.tabela-wrapper {
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  overflow: hidden;
+  margin-bottom: 16px;
 }
 
-.form-produto {
+table.tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela th {
+  text-align: left;
+  font-size: 11px;
+  color: var(--cor-texto-4);
+  font-weight: 500;
+  padding: 10px 12px;
+  background-color: var(--cor-fundo-2);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.tabela td {
+  padding: 10px 12px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--cor-borda-suave);
+  color: var(--cor-texto);
+}
+
+.tabela tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.tabela td .acoes-linha {
+  display: flex;
+  gap: 6px;
+}
+
+.tabela td button {
+  width: auto;
+  padding: 5px 11px;
+  font-size: 11px;
+}
+
+.btn-editar-linha { background-color: var(--cor-destaque); }
+.btn-excluir-linha { background-color: var(--cor-perigo); }
+
+/* Formularios de cadastro */
+
+.form-cadastro {
   background: var(--cor-card);
-  border: 0.5px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-card);
   padding: 14px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 9px;
 }
 
-.form-produto h3 {
+.form-cadastro h3 {
   font-size: 12px;
   font-weight: 500;
   color: var(--cor-destaque);
-  display: flex;
-  align-items: center;
-  gap: 6px;
   margin: 0 0 1px;
 }
 
-.titulo-com-icone svg {
-  width: 15px;
-  height: 15px;
-  flex-shrink: 0;
-}
-
-.form-produto input,
-.form-produto textarea,
-.form-produto select {
-  width: 100%;
-  box-sizing: border-box;
+.form-cadastro input,
+.form-cadastro select,
+.form-cadastro textarea {
   margin-bottom: 0;
 }
 
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--cor-texto-3);
-}
+/* Badges */
 
-.checkbox-label input {
-  width: auto;
-  margin: 0;
-}
-
-.produtos-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
-}
-
-.produto-card {
-  border: 0.5px solid var(--cor-borda);
-  border-radius: var(--raio-card);
-  padding: 10px;
-  text-align: center;
-  background-color: var(--cor-card);
-  cursor: pointer;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
-}
-
-.produto-card:hover {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
-  transform: translateY(-1px);
-}
-
-.produto-imagem {
-  height: 44px;
-  background-color: var(--cor-fundo-2);
-  border-radius: 8px;
-  margin-bottom: 6px;
-}
-
-.produto-nome {
-  font-size: 11.5px;
+.badge {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 20px;
   font-weight: 500;
-  margin: 0 0 2px;
-  color: var(--cor-texto);
 }
 
-.produto-preco, .produto-codigo {
-  font-size: 10.5px;
-  color: var(--cor-texto-4);
-  margin: 0;
-}
-
-.produto-card .btn-excluir {
-  width: auto;
-  padding: 5px 10px;
-  font-size: 11px;
-  background-color: var(--cor-perigo);
-  margin-top: 6px;
-}
-
-/* Linha simples: Estoque, Clientes, Historico */
-
-.linha-simples {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border: 0.5px solid var(--cor-borda);
-  border-radius: var(--raio-card);
-  padding: 9px 12px;
-  margin-bottom: 8px;
-  background-color: var(--cor-card);
-}
-
-.linha-simples > div {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.avatar-iniciais {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: var(--cor-destaque-clara);
-  color: var(--cor-destaque-escura);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 500;
-  margin-right: 8px;
-  flex-shrink: 0;
-}
+.badge-ok { background-color: var(--cor-sucesso-fundo); color: var(--cor-sucesso); }
+.badge-perigo { background-color: var(--cor-perigo-fundo); color: var(--cor-perigo); }
+.badge-info { background-color: var(--cor-info-fundo); color: var(--cor-info); }
 
 /* Cards de estatistica (Pedidos) */
 
@@ -442,7 +421,7 @@ button:hover {
 
 .stat-card {
   background-color: var(--cor-card);
-  border: 0.5px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda);
   border-radius: 8px;
   padding: 8px 14px;
   text-align: center;
@@ -461,6 +440,8 @@ button:hover {
   color: var(--cor-texto-4);
 }
 
+/* Abas */
+
 .abas {
   display: flex;
   gap: 6px;
@@ -470,7 +451,7 @@ button:hover {
 
 .aba-btn {
   background-color: var(--cor-card);
-  border: 0.5px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-botao);
   padding: 7px 13px;
   font-size: 11px;
@@ -507,7 +488,7 @@ button:hover {
 
 .pedido-card {
   background-color: var(--cor-card);
-  border: 0.5px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-card);
   margin-bottom: 10px;
   overflow: hidden;
@@ -521,19 +502,6 @@ button:hover {
   gap: 8px;
 }
 
-.pedido-item-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.pedido-item-info p {
-  font-size: 13.5px;
-  font-weight: 500;
-  color: var(--cor-texto);
-  margin: 0;
-}
-
 .pedido-tipo {
   display: inline-block;
   background-color: var(--cor-destaque-clara);
@@ -543,7 +511,30 @@ button:hover {
   border-radius: 5px;
   font-weight: 500;
   margin-right: 5px;
-  text-transform: capitalize;
+}
+
+.pedido-numero {
+  font-size: 10px;
+  color: var(--cor-texto-3);
+}
+
+.pedido-nome {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--cor-texto);
+  margin: 3px 0 2px;
+}
+
+.pedido-itens-resumo {
+  font-size: 11px;
+  color: var(--cor-texto-4);
+}
+
+.pedido-total {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--cor-marrom);
+  white-space: nowrap;
 }
 
 .observacao-pedido {
@@ -573,24 +564,112 @@ button:hover {
   flex-wrap: wrap;
 }
 
-.pedido-card button {
+.botao-acao {
   width: auto;
   padding: 6px 12px;
   font-size: 11px;
   font-weight: 500;
   background-color: var(--cor-card);
+  border: 1px solid var(--cor-borda);
 }
 
-.btn-avancar { border: 0.5px solid #B5D98A; color: var(--cor-sucesso); }
-.btn-editar { border: 0.5px solid var(--cor-destaque-borda); color: var(--cor-destaque-escura); }
-.btn-imprimir-cozinha, .btn-imprimir-cliente { border: 0.5px solid #85B7EB; color: var(--cor-info); }
-.btn-cancelar { border: 0.5px solid #F0BABA; color: var(--cor-perigo); }
+.btn-avancar { border-color: #B5D98A; color: var(--cor-sucesso); }
+.btn-editar { border-color: var(--cor-destaque-borda); color: var(--cor-destaque-escura); }
+.btn-imprimir-cozinha, .btn-imprimir-cliente { border-color: #85B7EB; color: var(--cor-info); }
+.btn-cancelar { border-color: #F0BABA; color: var(--cor-perigo); }
 
-/* Resumo do pedido (Venda) */
+/* Tela Novo Pedido (Venda) */
+
+.secao-form {
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  padding: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.secao-form h3 {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--cor-destaque);
+  margin: 0 0 1px;
+}
+
+.secao-form input,
+.secao-form select,
+.secao-form textarea {
+  margin-bottom: 0;
+}
+
+.canal-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.botao-canal {
+  width: auto;
+  flex: 1;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto-3);
+  border: 1px solid var(--cor-borda);
+  padding: 9px;
+}
+
+.botao-canal.ativo {
+  background-color: var(--cor-destaque);
+  color: white;
+  border-color: var(--cor-destaque);
+}
+
+.linha-adicionar-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.linha-adicionar-item select {
+  flex: 2;
+}
+
+.linha-adicionar-item input {
+  flex: 0 0 70px;
+}
+
+.linha-adicionar-item button {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 9px 14px;
+  white-space: nowrap;
+}
+
+.item-adicionado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--cor-borda-suave);
+  font-size: 13px;
+}
+
+.item-adicionado:last-child {
+  border-bottom: none;
+}
+
+.item-adicionado .btn-remover-item {
+  width: auto;
+  padding: 3px 9px;
+  font-size: 11px;
+  background-color: var(--cor-perigo-fundo);
+  color: var(--cor-perigo);
+}
 
 .resumo-caixa {
   background-color: var(--cor-destaque-clara);
-  border: 0.5px solid var(--cor-destaque-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-botao);
   padding: 12px;
   margin-bottom: 10px;
@@ -609,7 +688,7 @@ button:hover {
   justify-content: space-between;
   padding-top: 8px;
   margin-top: 4px;
-  border-top: 0.5px solid var(--cor-destaque-borda);
+  border-top: 1px solid var(--cor-destaque-borda);
   font-size: 14px;
   font-weight: 500;
   color: var(--cor-texto);
@@ -619,7 +698,7 @@ button:hover {
   color: var(--cor-destaque);
 }
 
-/* Troco: pertence somente a tela de Venda (Novo pedido) */
+/* Troco: existe somente na tela de Venda (Novo pedido) */
 
 .troco-resultado {
   background-color: var(--cor-sucesso-fundo);
@@ -635,21 +714,11 @@ button:hover {
   color: var(--cor-perigo);
 }
 
-.badge-estoque {
-  font-size: 10px;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.badge-ok {
+#btnFinalizar {
   background-color: var(--cor-sucesso-fundo);
   color: var(--cor-sucesso);
-}
-
-.badge-baixo {
-  background-color: var(--cor-perigo-fundo);
-  color: var(--cor-perigo);
+  border: 1px solid #B5D98A;
+  padding: 12px;
 }
 
 /* Financeiro */
@@ -668,7 +737,7 @@ button:hover {
 
 .metrica-card {
   background-color: var(--cor-fundo-2);
-  border: 0.5px solid var(--cor-borda);
+  border: 1px solid var(--cor-borda);
   border-radius: var(--raio-card);
   padding: 11px 13px;
 }
@@ -684,24 +753,6 @@ button:hover {
   font-weight: 500;
   margin: 0;
   color: var(--cor-texto);
-}
-
-.despesa-linha {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border: 0.5px solid var(--cor-borda);
-  border-radius: var(--raio-card);
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  background-color: var(--cor-card);
-}
-
-.despesa-valor {
-  color: var(--cor-perigo);
-  font-size: 12.5px;
-  font-weight: 500;
-  text-align: right;
 }
 
 .ts-small {

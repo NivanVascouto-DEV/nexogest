@@ -1,4 +1,5 @@
 const token = localStorage.getItem('token');
+let todasDespesas = [];
 
 function carregarDRE() {
   fetch('http://localhost:3000/relatorios/dre', {
@@ -47,30 +48,65 @@ function formatarData(dataISO) {
   return `${dia}/${mes}/${ano}`;
 }
 
+function diasAteVencimento(dataISO) {
+  if (!dataISO) return null;
+  const hoje = new Date();
+  const vencimento = new Date(dataISO);
+  const diffMs = vencimento.getTime() - Date.UTC(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+  return Math.round(diffMs / (1000 * 60 * 60 * 24));
+}
+
+function renderizarDespesas(despesas) {
+  const corpo = document.getElementById('corpoDespesas');
+  corpo.innerHTML = '';
+
+  if (despesas.length === 0) {
+    corpo.innerHTML = '<tr><td colspan="4">Nenhuma despesa lançada.</td></tr>';
+    return;
+  }
+
+  despesas.forEach(d => {
+    const dias = diasAteVencimento(d.data_vencimento);
+    const proximoVencimento = dias !== null && dias <= 7;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${d.descricao}</td>
+      <td>${d.categoria}</td>
+      <td>${formatarData(d.data_vencimento)} ${proximoVencimento ? '<span class="badge badge-perigo">Vence em breve</span>' : ''}</td>
+      <td>R$ ${d.valor}</td>
+    `;
+    corpo.appendChild(tr);
+  });
+}
+
 function carregarDespesas() {
   fetch('http://localhost:3000/lancamentos-financeiros', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
     .then(lancamentos => {
-      const despesas = lancamentos.filter(l => l.tipo === 'saida');
-      const container = document.getElementById('listaDespesas');
-      container.innerHTML = '';
-
-      despesas.forEach(d => {
-        const div = document.createElement('div');
-        div.className = 'despesa-linha';
-        div.innerHTML = `
-          <div>
-            <div style="font-size:12.5px; font-weight:500;">${d.descricao}</div>
-            <div class="ts-small">${d.categoria} · vence em ${formatarData(d.data_vencimento)}</div>
-          </div>
-          <div class="despesa-valor">R$ ${d.valor}</div>
-        `;
-        container.appendChild(div);
-      });
+      todasDespesas = lancamentos.filter(l => l.tipo === 'saida');
+      renderizarDespesas(todasDespesas);
     });
 }
+
+document.getElementById('btnFiltrarFin').addEventListener('click', () => {
+  const inicio = document.getElementById('dataInicioFin').value;
+  const fim = document.getElementById('dataFimFin').value;
+
+  if (!inicio || !fim) {
+    renderizarDespesas(todasDespesas);
+    return;
+  }
+
+  const filtradas = todasDespesas.filter(d => {
+    if (!d.data_vencimento) return false;
+    const data = d.data_vencimento.split('T')[0].split(' ')[0];
+    return data >= inicio && data <= fim;
+  });
+
+  renderizarDespesas(filtradas);
+});
 
 document.getElementById('btnSalvarDespesa').addEventListener('click', async () => {
   const descricao = document.getElementById('descricaoDespesa').value;

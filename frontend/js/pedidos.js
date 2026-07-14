@@ -3,6 +3,8 @@ const ICONE_OBSERVACAO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentCo
 const token = localStorage.getItem('token');
 let todosPedidos = [];
 let clientesMap = {};
+let produtosMap = {};
+let itensPorPedido = {};
 let abaAtual = 'pendente';
 
 const proximoStatus = {
@@ -18,6 +20,11 @@ function iniciais(nome) {
   return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 
+function capitalizar(texto) {
+  if (!texto) return '-';
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
+}
+
 async function carregarClientesMap() {
   const resposta = await fetch('http://localhost:3000/clientes', {
     headers: { 'Authorization': 'Bearer ' + token }
@@ -25,6 +32,33 @@ async function carregarClientesMap() {
   const clientes = await resposta.json();
   clientesMap = {};
   clientes.forEach(c => { clientesMap[c.id] = c; });
+}
+
+async function carregarProdutosMap() {
+  const resposta = await fetch('http://localhost:3000/produtos', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const produtos = await resposta.json();
+  produtosMap = {};
+  produtos.forEach(p => { produtosMap[p.id] = p.nome; });
+}
+
+async function carregarItensPorPedido() {
+  const resposta = await fetch('http://localhost:3000/itens-pedido', {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const itens = await resposta.json();
+  itensPorPedido = {};
+  itens.forEach(item => {
+    if (!itensPorPedido[item.pedido_id]) itensPorPedido[item.pedido_id] = [];
+    itensPorPedido[item.pedido_id].push(item);
+  });
+}
+
+function resumoItens(pedidoId) {
+  const itens = itensPorPedido[pedidoId] || [];
+  if (itens.length === 0) return 'Sem itens registrados';
+  return itens.map(item => `${parseFloat(item.quantidade)}x ${produtosMap[item.produto_id] || 'Produto'}`).join(', ');
 }
 
 function carregarPedidos() {
@@ -75,15 +109,17 @@ function renderizarPedidos() {
 
   filtrados.forEach(pedido => {
     const cliente = clientesMap[pedido.cliente_id];
-    const nomeCliente = cliente ? cliente.nome : '';
+    const nomeCliente = cliente ? cliente.nome : 'Cliente não identificado';
     const div = document.createElement('div');
     div.className = 'pedido-card';
     div.innerHTML = `
       <div class="pedido-item-topo">
-        <div class="pedido-item-info">
-          <div class="avatar-iniciais">${iniciais(nomeCliente)}</div>
-          <p><span class="pedido-tipo">${pedido.canal_venda || '-'}</span>Pedido #${pedido.id} - R$ ${pedido.total}${nomeCliente ? ' - ' + nomeCliente : ''}</p>
+        <div>
+          <span class="pedido-tipo">${capitalizar(pedido.canal_venda)}</span><span class="pedido-numero">Pedido #${pedido.id}</span>
+          <div class="pedido-nome">${nomeCliente}</div>
+          <div class="pedido-itens-resumo">${resumoItens(pedido.id)}</div>
         </div>
+        <div class="pedido-total">R$ ${pedido.total}</div>
       </div>
       ${pedido.observacoes && pedido.observacoes.trim() ? `
       <div class="observacao-pedido">
@@ -91,11 +127,11 @@ function renderizarPedidos() {
         <span>${pedido.observacoes}</span>
       </div>` : ''}
       <div class="pedido-item-acoes">
-        <button data-id="${pedido.id}" class="btn-avancar">Avançar</button>
-        <button data-id="${pedido.id}" class="btn-editar">Editar</button>
-        <button data-id="${pedido.id}" class="btn-imprimir-cozinha">Imprimir via da cozinha</button>
-        <button data-id="${pedido.id}" class="btn-imprimir-cliente">Imprimir via do cliente</button>
-        <button data-id="${pedido.id}" class="btn-cancelar">Cancelar</button>
+        <button data-id="${pedido.id}" class="botao-acao btn-avancar">Avançar</button>
+        <button data-id="${pedido.id}" class="botao-acao btn-editar">Editar</button>
+        <button data-id="${pedido.id}" class="botao-acao btn-imprimir-cozinha">Imprimir cozinha</button>
+        <button data-id="${pedido.id}" class="botao-acao btn-imprimir-cliente">Imprimir cliente</button>
+        <button data-id="${pedido.id}" class="botao-acao btn-cancelar">Cancelar</button>
       </div>
     `;
     container.appendChild(div);
@@ -202,8 +238,6 @@ async function editarPedido(id) {
   if (telefone === null) return;
   const endereco = prompt('Endereço:', cliente.endereco || '');
   if (endereco === null) return;
-  const formaPagamento = prompt('Forma de pagamento (dinheiro/pix/cartao):', pedido.forma_pagamento || '');
-  if (formaPagamento === null) return;
   const observacoes = prompt('Observações:', pedido.observacoes || '');
   if (observacoes === null) return;
 
@@ -218,7 +252,7 @@ async function editarPedido(id) {
     });
   }
 
-  await salvarPedido(pedido, { forma_pagamento: formaPagamento, observacoes });
+  await salvarPedido(pedido, { observacoes });
 
   await carregarClientesMap();
   carregarPedidos();
@@ -234,12 +268,11 @@ document.querySelectorAll('.aba-btn').forEach(btn => {
   });
 });
 
-carregarClientesMap().then(renderizarPedidos);
-carregarPedidos();
+Promise.all([carregarClientesMap(), carregarProdutosMap(), carregarItensPorPedido()]).then(carregarPedidos);
 
 const socket = io('http://localhost:3000');
 socket.on('novo-pedido', async (pedido) => {
-  await carregarClientesMap();
+  await Promise.all([carregarClientesMap(), carregarProdutosMap(), carregarItensPorPedido()]);
   todosPedidos.push(pedido);
   renderizarPedidos();
 });

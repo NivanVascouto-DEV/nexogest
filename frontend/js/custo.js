@@ -75,6 +75,30 @@ async function calcularCusto() {
   const produtoId = document.getElementById('selectProduto').value;
   if (!produtoId) return;
 
+  const respostaFicha = await fetch(`http://localhost:3000/ficha-tecnica/produto/${produtoId}`, {
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  const itensFicha = await respostaFicha.json();
+
+  const corpo = document.getElementById('corpoFichaTecnica');
+  corpo.innerHTML = '';
+
+  if (itensFicha.length === 0) {
+    corpo.innerHTML = '<tr><td colspan="4">Nenhum insumo cadastrado para este produto.</td></tr>';
+  } else {
+    itensFicha.forEach(item => {
+      const subtotal = parseFloat(item.quantidade_usada) * parseFloat(item.custo_por_unidade);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${item.nome}</td>
+        <td>${item.quantidade_usada} ${item.unidade_medida}</td>
+        <td>R$ ${parseFloat(item.custo_por_unidade).toFixed(2)}</td>
+        <td>R$ ${subtotal.toFixed(2)}</td>
+      `;
+      corpo.appendChild(tr);
+    });
+  }
+
   const resposta = await fetch(`http://localhost:3000/produtos/${produtoId}/custo`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
@@ -82,7 +106,7 @@ async function calcularCusto() {
 
   const custo = parseFloat(dados.custo_producao) || 0;
   document.getElementById('resultadoCusto').innerHTML = `
-    <p class="metrica-label">Custo de produção</p>
+    <p class="metrica-label">Custo de produção deste produto</p>
     <p class="metrica-valor">R$ ${custo.toFixed(2)}</p>
   `;
 }

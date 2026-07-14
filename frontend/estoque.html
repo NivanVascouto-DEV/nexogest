@@ -8,9 +8,17 @@
   <meta name="theme-color" content="#D4537E">
 </head>
 <body>
-  <div class="produtos-container">
+  <div class="container-tela">
     <h1>Estoque</h1>
-    <div id="listaEstoque"></div>
+
+    <div class="tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr><th>Produto</th><th>Quantidade</th></tr>
+        </thead>
+        <tbody id="corpoEstoque"></tbody>
+      </table>
+    </div>
   </div>
 
   <script src="js/menu.js"></script>

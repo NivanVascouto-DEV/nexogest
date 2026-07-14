@@ -6,12 +6,12 @@ fetch('http://localhost:3000/produtos', {
 })
   .then(resposta => resposta.json())
   .then(produtos => {
-    const container = document.getElementById('listaEstoque');
+    const corpo = document.getElementById('corpoEstoque');
 
     const produtosComEstoque = produtos.filter(p => p.controla_estoque);
 
     if (produtosComEstoque.length === 0) {
-      container.innerHTML = '<p>Nenhum produto com controle de estoque.</p>';
+      corpo.innerHTML = '<tr><td colspan="2">Nenhum produto com controle de estoque.</td></tr>';
       return;
     }
 
@@ -19,12 +19,11 @@ fetch('http://localhost:3000/produtos', {
       const quantidade = parseFloat(produto.quantidade_estoque) || 0;
       const baixo = quantidade <= LIMITE_ESTOQUE_BAIXO;
 
-      const div = document.createElement('div');
-      div.className = 'linha-simples';
-      div.innerHTML = `
-        <p>${produto.nome}</p>
-        <span class="badge-estoque ${baixo ? 'badge-baixo' : 'badge-ok'}">${quantidade} ${produto.unidade_venda}</span>
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${produto.nome}</td>
+        <td><span class="badge ${baixo ? 'badge-perigo' : 'badge-ok'}">${quantidade} ${produto.unidade_venda}</span></td>
       `;
-      container.appendChild(div);
+      corpo.appendChild(tr);
     });
   });

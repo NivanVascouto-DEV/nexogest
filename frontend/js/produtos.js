@@ -6,23 +6,22 @@ function carregarProdutos() {
   })
     .then(resposta => resposta.json())
     .then(produtos => {
-      const container = document.getElementById('listaProdutosGrid');
-      container.innerHTML = '';
+      const corpo = document.getElementById('corpoProdutos');
+      corpo.innerHTML = '';
 
       produtos.forEach(produto => {
-        const card = document.createElement('div');
-        card.className = 'produto-card';
-        card.innerHTML = `
-          <div class="produto-imagem"></div>
-          <p class="produto-nome">${produto.nome}</p>
-          <p class="produto-preco">R$ ${produto.preco}</p>
-          <p class="produto-codigo">Código: ${produto.codigo}</p>
-          <button data-id="${produto.id}" class="btn-excluir">Excluir</button>
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${produto.codigo}</td>
+          <td>${produto.nome}</td>
+          <td>${produto.unidade_venda}</td>
+          <td>R$ ${produto.preco}</td>
+          <td><button data-id="${produto.id}" class="btn-excluir-linha">Excluir</button></td>
         `;
-        container.appendChild(card);
+        corpo.appendChild(tr);
       });
 
-      document.querySelectorAll('.btn-excluir').forEach(btn => {
+      document.querySelectorAll('.btn-excluir-linha').forEach(btn => {
         btn.addEventListener('click', () => excluirProduto(parseInt(btn.dataset.id)));
       });
     });
