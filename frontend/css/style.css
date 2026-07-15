@@ -1,7 +1,7 @@
 :root {
-  --cor-fundo: #FAFAF8;
-  --cor-fundo-2: #FFFAF7;
-  --cor-card: #FFFFFF;
+  --cor-fundo: #F7F3F0;
+  --cor-fundo-2: #FCF7F5;
+  --cor-card: #FFFCFB;
   --cor-borda: #E8E6E2;
   --cor-borda-suave: #F0E8E2;
 
@@ -12,7 +12,7 @@
 
   --cor-destaque: #D4537E;
   --cor-destaque-clara: #FBEAF0;
-  --cor-destaque-borda: #F4C0D1;
+  --cor-destaque-borda: color-mix(in srgb, var(--cor-destaque) 35%, white);
   --cor-destaque-escura: #993556;
 
   --cor-marrom: #6B4226;
@@ -326,10 +326,11 @@ button:hover {
 
 .tabela-wrapper {
   background: var(--cor-card);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-card);
   overflow: hidden;
   margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 table.tabela {
@@ -376,13 +377,14 @@ table.tabela {
 
 .form-cadastro {
   background: var(--cor-card);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-card);
   padding: 14px;
   margin-bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 9px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .form-cadastro h3 {
@@ -421,17 +423,18 @@ table.tabela {
 
 .stat-card {
   background-color: var(--cor-card);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: 8px;
   padding: 8px 14px;
   text-align: center;
   min-width: 64px;
   flex: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .stat-card .stat-numero {
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--cor-destaque);
 }
 
@@ -451,7 +454,7 @@ table.tabela {
 
 .aba-btn {
   background-color: var(--cor-card);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-botao);
   padding: 7px 13px;
   font-size: 11px;
@@ -488,10 +491,11 @@ table.tabela {
 
 .pedido-card {
   background-color: var(--cor-card);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-card);
   margin-bottom: 10px;
   overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .pedido-item-topo {
@@ -582,13 +586,14 @@ table.tabela {
 
 .secao-form {
   background: var(--cor-card);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-card);
   padding: 14px;
   margin-bottom: 12px;
   display: flex;
   flex-direction: column;
   gap: 9px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .secao-form h3 {
@@ -673,6 +678,7 @@ table.tabela {
   border-radius: var(--raio-botao);
   padding: 12px;
   margin-bottom: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .resumo-linha {
@@ -737,9 +743,10 @@ table.tabela {
 
 .metrica-card {
   background-color: var(--cor-fundo-2);
-  border: 1px solid var(--cor-borda);
+  border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-card);
   padding: 11px 13px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .metrica-label {
@@ -750,7 +757,7 @@ table.tabela {
 
 .metrica-valor {
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 600;
   margin: 0;
   color: var(--cor-texto);
 }
