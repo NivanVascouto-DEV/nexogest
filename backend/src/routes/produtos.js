@@ -4,7 +4,10 @@ const pool = require('../db');
 
 router.get('/', async (req, res) => {
     try {
-        const resultado = await pool.query('SELECT * FROM produtos');
+        const incluirInativos = req.query.todos === '1' || req.query.todos === 'true';
+        const resultado = await pool.query(
+            incluirInativos ? 'SELECT * FROM produtos' : 'SELECT * FROM produtos WHERE ativo = true'
+        );
         res.json(resultado.rows);
     } catch (erro) {
         console.error(erro);
@@ -44,8 +47,8 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        await pool.query('DELETE FROM produtos WHERE id = $1', [id]);
-        res.json({ mensagem: 'Produto excluído com sucesso' });
+        await pool.query('UPDATE produtos SET ativo = false WHERE id = $1', [id]);
+        res.json({ mensagem: 'Produto desativado com sucesso' });
     } catch (erro) {
         console.error(erro);
         res.status(500).json({ mensagem: 'Erro ao excluir produto' });

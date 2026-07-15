@@ -30,7 +30,7 @@ function capitalizar(texto) {
 }
 
 async function carregarClientesMap() {
-  const resposta = await fetch('http://localhost:3000/clientes', {
+  const resposta = await fetch('http://localhost:3000/clientes?todos=1', {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const clientes = await resposta.json();
@@ -39,7 +39,7 @@ async function carregarClientesMap() {
 }
 
 async function carregarProdutosMap() {
-  const resposta = await fetch('http://localhost:3000/produtos', {
+  const resposta = await fetch('http://localhost:3000/produtos?todos=1', {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const produtos = await resposta.json();
@@ -246,7 +246,9 @@ async function cancelarPedido(id) {
 // ---- Edicao inline do pedido (cliente, forma de pagamento, total, itens) ----
 
 function opcoesProdutos(selecionadoId) {
-  return produtosLista.map(p => `<option value="${p.id}"${p.id === selecionadoId ? ' selected' : ''}>${p.nome} — R$ ${p.preco}</option>`).join('');
+  return produtosLista
+    .filter(p => p.ativo !== false)
+    .map(p => `<option value="${p.id}"${p.id === selecionadoId ? ' selected' : ''}>${p.nome} — R$ ${p.preco}</option>`).join('');
 }
 
 function renderPainelEdicao(pedido) {

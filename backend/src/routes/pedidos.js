@@ -21,10 +21,10 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        const { cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes } = req.body;
+        const { cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes, valor_recebido } = req.body;
         const resultado = await pool.query(
-            'INSERT INTO pedidos (cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-            [cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes]
+            'INSERT INTO pedidos (cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes, valor_recebido) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+            [cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes, valor_recebido]
         );
         req.app.get('io').emit('novo-pedido', resultado.rows[0]);
         res.json(resultado.rows[0]);
@@ -37,10 +37,10 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes } = req.body;
+        const { cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes, valor_recebido } = req.body;
         const resultado = await pool.query(
-            'UPDATE pedidos SET cliente_id = $1, usuario_id = $2, canal_venda = $3, status = $4, forma_pagamento = $5, total = $6, observacoes = $7 WHERE id = $8 RETURNING *',
-            [cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes, id]
+            'UPDATE pedidos SET cliente_id = $1, usuario_id = $2, canal_venda = $3, status = $4, forma_pagamento = $5, total = $6, observacoes = $7, valor_recebido = $8 WHERE id = $9 RETURNING *',
+            [cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes, valor_recebido, id]
         );
         res.json(resultado.rows[0]);
     } catch (erro) {

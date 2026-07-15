@@ -60,30 +60,25 @@ function criarImpressora(largura) {
   });
 }
 
-// Via interna, para quem prepara o pedido: densa, prioriza não perder informação.
+// Via interna, para quem prepara o pedido: so o essencial para montar o pedido.
 function montarCupomEstabelecimento(printer, dados) {
   const { pedido, itens } = dados;
 
   printer.alignCenter();
   printer.bold(true);
-  printer.println('NEXOGEST - VIA ESTABELECIMENTO');
+  printer.println('DELICIAS DA MARY');
+  printer.println('VIA COZINHA');
   printer.bold(false);
   printer.drawLine();
 
   printer.alignLeft();
   printer.leftRight(`Pedido #${pedido.id}`, formatarDataHora(pedido.data_pedido));
-  printer.println(`Canal: ${pedido.canal_venda || '-'}`);
   printer.println(`Cliente: ${pedido.cliente_nome || '-'}`);
-  printer.println(`Telefone: ${pedido.cliente_telefone || '-'}`);
-  if (pedido.cliente_endereco) {
-    printer.println(`Endereco: ${pedido.cliente_endereco}`);
-  }
   printer.drawLine();
 
   itens.forEach((item) => {
     const qtd = parseFloat(item.quantidade);
-    const subtotal = (qtd * parseFloat(item.preco_unitario)).toFixed(2);
-    printer.leftRight(`${qtd}x ${item.produto_nome}`, `R$ ${subtotal}`);
+    printer.println(`${qtd}x ${item.produto_nome}`);
   });
   printer.drawLine();
 
@@ -92,14 +87,8 @@ function montarCupomEstabelecimento(printer, dados) {
     printer.println('*** OBSERVACOES ***');
     printer.println(pedido.observacoes.toUpperCase());
     printer.bold(false);
-    printer.drawLine();
   }
 
-  printer.leftRight('Pagamento:', pedido.forma_pagamento || '-');
-  printer.bold(true);
-  printer.leftRight('TOTAL', `R$ ${parseFloat(pedido.total).toFixed(2)}`);
-  printer.bold(false);
-  printer.println(`Vendedor: ${pedido.usuario_nome || '-'}`);
   printer.newLine();
   printer.cut();
 }
@@ -110,13 +99,15 @@ function montarCupomCliente(printer, dados) {
 
   printer.alignCenter();
   printer.bold(true);
-  printer.println('NexoGest');
+  printer.println('DELICIAS DA MARY');
   printer.bold(false);
-  printer.println(formatarDataHora(pedido.data_pedido));
   printer.drawLine();
 
   printer.alignLeft();
-  printer.println(`Pedido #${pedido.id}`);
+  printer.println(`Cliente: ${pedido.cliente_nome || '-'}`);
+  if (pedido.cliente_endereco) {
+    printer.println(`Endereco: ${pedido.cliente_endereco}`);
+  }
   printer.drawLine();
 
   itens.forEach((item) => {
@@ -130,9 +121,12 @@ function montarCupomCliente(printer, dados) {
   printer.leftRight('TOTAL', `R$ ${parseFloat(pedido.total).toFixed(2)}`);
   printer.bold(false);
   printer.println(`Pagamento: ${pedido.forma_pagamento || '-'}`);
-  printer.newLine();
-  printer.alignCenter();
-  printer.println('Obrigado pela preferencia!');
+
+  if (pedido.forma_pagamento === 'dinheiro' && pedido.valor_recebido !== null && pedido.valor_recebido !== undefined) {
+    const troco = parseFloat(pedido.valor_recebido) - parseFloat(pedido.total);
+    printer.leftRight('Troco', `R$ ${troco.toFixed(2)}`);
+  }
+
   printer.newLine();
   printer.cut();
 }

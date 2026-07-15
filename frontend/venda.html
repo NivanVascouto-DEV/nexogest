@@ -36,6 +36,10 @@
       <div class="linha-adicionar-item">
         <select id="selectProduto"></select>
         <input type="number" id="quantidadeItem" value="1" min="1">
+        <div id="calculadoraKg" class="calculadora-kg" style="display:none;">
+          <input type="number" id="pesoGramas" placeholder="Peso (g)" step="1" min="0">
+          <input type="number" id="valorDesejadoKg" placeholder="Valor (R$)" step="0.01" min="0">
+        </div>
         <button type="button" id="btnAdicionarItem">+ Adicionar</button>
       </div>
     </div>

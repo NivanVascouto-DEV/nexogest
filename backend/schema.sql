@@ -82,3 +82,13 @@ CREATE TABLE lancamentos_financeiros (
     forma_pagamento TEXT,
     data_lancamento TIMESTAMP DEFAULT NOW()
 );
+
+-- Exclusao logica (soft delete) de produtos e clientes: pedidos antigos que
+-- referenciam essas linhas continuam funcionando (Historico), so somem das
+-- listagens do dia a dia.
+ALTER TABLE produtos ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT true;
+ALTER TABLE clientes ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT true;
+
+-- Valor recebido em dinheiro no momento da venda, usado para calcular o
+-- troco exibido na via de impressao do cliente.
+ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS valor_recebido NUMERIC(10,2);

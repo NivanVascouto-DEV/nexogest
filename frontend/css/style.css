@@ -370,6 +370,14 @@ table.tabela {
   font-size: 11px;
 }
 
+.linha-detalhes-pedido td {
+  background-color: var(--cor-destaque-clara);
+}
+
+.detalhes-pedido-conteudo {
+  padding: 4px 6px;
+}
+
 .btn-editar-linha { background-color: var(--cor-destaque); }
 .btn-excluir-linha { background-color: var(--cor-perigo); }
 
@@ -697,6 +705,16 @@ body:has(.atalhos-legenda) .container-tela {
   width: auto;
   padding: 9px 14px;
   white-space: nowrap;
+}
+
+.calculadora-kg {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.calculadora-kg input {
+  flex: 0 0 90px;
 }
 
 .item-adicionado {

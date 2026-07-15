@@ -17,6 +17,7 @@ fetch('http://localhost:3000/produtos', {
       option.textContent = `${produto.nome} — R$ ${produto.preco}`;
       select.appendChild(option);
     });
+    atualizarModoQuantidade();
   });
 
 fetch('http://localhost:3000/clientes', {
@@ -87,20 +88,83 @@ function selecionarCanal(canal) {
   document.getElementById('btnRetirada').classList.toggle('ativo', canal === 'retirada');
 }
 
-document.getElementById('btnAdicionarItem').addEventListener('click', () => {
+// ---- Calculadora de peso/valor para produtos vendidos por kg ----
+
+function produtoSelecionadoEhKg() {
   const produtoId = parseInt(document.getElementById('selectProduto').value);
-  const quantidade = parseInt(document.getElementById('quantidadeItem').value) || 1;
+  const produto = produtosDisponiveis.find(p => p.id === produtoId);
+  return produto && produto.unidade_venda === 'kg';
+}
+
+function atualizarModoQuantidade() {
+  const ehKg = produtoSelecionadoEhKg();
+  document.getElementById('quantidadeItem').style.display = ehKg ? 'none' : '';
+  document.getElementById('calculadoraKg').style.display = ehKg ? 'flex' : 'none';
+  if (ehKg) {
+    document.getElementById('pesoGramas').value = '';
+    document.getElementById('valorDesejadoKg').value = '';
+  }
+}
+
+document.getElementById('selectProduto').addEventListener('change', atualizarModoQuantidade);
+
+document.getElementById('pesoGramas').addEventListener('input', () => {
+  const produtoId = parseInt(document.getElementById('selectProduto').value);
   const produto = produtosDisponiveis.find(p => p.id === produtoId);
   if (!produto) return;
+
+  const gramas = parseFloat(document.getElementById('pesoGramas').value);
+  if (isNaN(gramas)) {
+    document.getElementById('valorDesejadoKg').value = '';
+    return;
+  }
+
+  const valor = (gramas / 1000) * parseFloat(produto.preco);
+  document.getElementById('valorDesejadoKg').value = valor.toFixed(2);
+});
+
+document.getElementById('valorDesejadoKg').addEventListener('input', () => {
+  const produtoId = parseInt(document.getElementById('selectProduto').value);
+  const produto = produtosDisponiveis.find(p => p.id === produtoId);
+  if (!produto) return;
+
+  const valor = parseFloat(document.getElementById('valorDesejadoKg').value);
+  if (isNaN(valor)) {
+    document.getElementById('pesoGramas').value = '';
+    return;
+  }
+
+  const gramas = (valor / parseFloat(produto.preco)) * 1000;
+  document.getElementById('pesoGramas').value = gramas.toFixed(0);
+});
+
+document.getElementById('btnAdicionarItem').addEventListener('click', () => {
+  const produtoId = parseInt(document.getElementById('selectProduto').value);
+  const produto = produtosDisponiveis.find(p => p.id === produtoId);
+  if (!produto) return;
+
+  let quantidade;
+  if (produto.unidade_venda === 'kg') {
+    const gramas = parseFloat(document.getElementById('pesoGramas').value);
+    if (isNaN(gramas) || gramas <= 0) {
+      alert('Informe um peso válido maior que zero.');
+      return;
+    }
+    quantidade = gramas / 1000;
+  } else {
+    quantidade = parseInt(document.getElementById('quantidadeItem').value) || 1;
+  }
 
   const existente = pedidoAtual.find(item => item.produto_id === produtoId);
   if (existente) {
     existente.quantidade += quantidade;
   } else {
-    pedidoAtual.push({ produto_id: produtoId, nome: produto.nome, preco: parseFloat(produto.preco), quantidade: quantidade });
+    pedidoAtual.push({ produto_id: produtoId, nome: produto.nome, preco: parseFloat(produto.preco), quantidade: quantidade, unidade: produto.unidade_venda });
   }
 
   document.getElementById('quantidadeItem').value = 1;
+  document.getElementById('pesoGramas').value = '';
+  document.getElementById('valorDesejadoKg').value = '';
   atualizarListaItens();
 });
 
@@ -111,6 +175,10 @@ function removerItem(produtoId) {
 
 function calcularTotal() {
   return pedidoAtual.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
+}
+
+function rotuloQuantidade(item) {
+  return item.unidade === 'kg' ? `${(item.quantidade * 1000).toFixed(0)}g` : `${item.quantidade}x`;
 }
 
 function totalFinal() {
@@ -127,7 +195,7 @@ function atualizarListaItens() {
   } else {
     container.innerHTML = pedidoAtual.map(item => `
       <div class="item-adicionado">
-        <span>${item.quantidade}x ${item.nome} — R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+        <span>${rotuloQuantidade(item)} ${item.nome} — R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
         <button type="button" class="btn-remover-item" data-id="${item.produto_id}">✕</button>
       </div>
     `).join('');
@@ -149,7 +217,7 @@ function atualizarResumo() {
     resumo.innerHTML = '';
   } else {
     resumo.innerHTML = pedidoAtual.map(item => `
-      <div class="resumo-linha"><span>${item.nome}${item.quantidade > 1 ? ' x' + item.quantidade : ''}</span><span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span></div>
+      <div class="resumo-linha"><span>${item.nome} (${rotuloQuantidade(item)})</span><span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span></div>
     `).join('') + `<div class="resumo-total"><span>Total</span><span class="valor">R$ ${total.toFixed(2)}</span></div>`;
   }
 
@@ -213,6 +281,8 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
 
   const total = totalFinal();
   const forma_pagamento = document.getElementById('formaPagamento').value;
+  const valorRecebidoTexto = document.getElementById('valorRecebido').value;
+  const valor_recebido = valorRecebidoTexto ? parseFloat(valorRecebidoTexto) : null;
   const nome = document.getElementById('nomeCliente').value;
   const telefone = document.getElementById('telefoneCliente').value;
   const endereco = document.getElementById('enderecoCliente').value;
@@ -232,7 +302,8 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
       status: 'pendente',
       forma_pagamento: forma_pagamento,
       total: total,
-      observacoes: observacoes
+      observacoes: observacoes,
+      valor_recebido: valor_recebido
     })
   });
 
