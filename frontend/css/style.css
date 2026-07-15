@@ -672,6 +672,32 @@ table.tabela {
   color: var(--cor-perigo);
 }
 
+.autocomplete-lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--cor-card);
+  border: 1px solid var(--cor-destaque-borda);
+  border-radius: var(--raio-botao);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 160px;
+  overflow-y: auto;
+  display: none;
+}
+
+.autocomplete-item {
+  padding: 8px 11px;
+  font-size: 12.5px;
+  cursor: pointer;
+  color: var(--cor-texto);
+}
+
+.autocomplete-item:hover {
+  background-color: var(--cor-destaque-clara);
+}
+
 .resumo-caixa {
   background-color: var(--cor-destaque-clara);
   border: 1px solid var(--cor-destaque-borda);

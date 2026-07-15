@@ -61,7 +61,7 @@ function renderizarDespesas(despesas) {
   corpo.innerHTML = '';
 
   if (despesas.length === 0) {
-    corpo.innerHTML = '<tr><td colspan="4">Nenhuma despesa lançada.</td></tr>';
+    corpo.innerHTML = '<tr><td colspan="5">Nenhuma despesa lançada.</td></tr>';
     return;
   }
 
@@ -74,9 +74,23 @@ function renderizarDespesas(despesas) {
       <td>${d.categoria}</td>
       <td>${formatarData(d.data_vencimento)} ${proximoVencimento ? '<span class="badge badge-perigo">Vence em breve</span>' : ''}</td>
       <td>R$ ${d.valor}</td>
+      <td><button data-id="${d.id}" class="btn-excluir-despesa btn-excluir-linha">Excluir</button></td>
     `;
     corpo.appendChild(tr);
   });
+
+  document.querySelectorAll('.btn-excluir-despesa').forEach(btn => {
+    btn.addEventListener('click', () => excluirDespesa(parseInt(btn.dataset.id)));
+  });
+}
+
+async function excluirDespesa(id) {
+  if (!confirm('Excluir este lançamento?')) return;
+  await fetch('http://localhost:3000/lancamentos-financeiros/' + id, {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + token }
+  });
+  carregarDespesas();
 }
 
 function carregarDespesas() {

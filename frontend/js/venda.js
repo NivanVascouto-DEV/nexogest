@@ -1,5 +1,6 @@
 const token = localStorage.getItem('token');
 let produtosDisponiveis = [];
+let clientesDisponiveis = [];
 let pedidoAtual = [];
 let canalSelecionado = 'delivery';
 
@@ -17,6 +18,65 @@ fetch('http://localhost:3000/produtos', {
       select.appendChild(option);
     });
   });
+
+fetch('http://localhost:3000/clientes', {
+  headers: { 'Authorization': 'Bearer ' + token }
+})
+  .then(resposta => resposta.json())
+  .then(clientes => { clientesDisponiveis = clientes; });
+
+function filtrarClientes(texto) {
+  if (!texto || texto.trim().length < 2) return [];
+  const termo = texto.trim().toLowerCase();
+  return clientesDisponiveis.filter(c =>
+    (c.nome && c.nome.toLowerCase().includes(termo)) ||
+    (c.telefone && c.telefone.includes(termo))
+  ).slice(0, 6);
+}
+
+function renderSugestoes(containerId, lista) {
+  const container = document.getElementById(containerId);
+  if (lista.length === 0) {
+    container.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = lista.map(c => `<div class="autocomplete-item" data-id="${c.id}">${c.nome} — ${c.telefone}</div>`).join('');
+  container.style.display = 'block';
+
+  container.querySelectorAll('.autocomplete-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const cliente = lista.find(c => c.id === parseInt(item.dataset.id));
+      preencherCliente(cliente);
+    });
+  });
+}
+
+function preencherCliente(cliente) {
+  document.getElementById('nomeCliente').value = cliente.nome || '';
+  document.getElementById('telefoneCliente').value = cliente.telefone || '';
+  document.getElementById('enderecoCliente').value = cliente.endereco || '';
+  document.getElementById('listaSugestoesNome').style.display = 'none';
+  document.getElementById('listaSugestoesTelefone').style.display = 'none';
+}
+
+document.getElementById('nomeCliente').addEventListener('input', (e) => {
+  renderSugestoes('listaSugestoesNome', filtrarClientes(e.target.value));
+});
+
+document.getElementById('telefoneCliente').addEventListener('input', (e) => {
+  renderSugestoes('listaSugestoesTelefone', filtrarClientes(e.target.value));
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#nomeCliente') && !e.target.closest('#listaSugestoesNome')) {
+    document.getElementById('listaSugestoesNome').style.display = 'none';
+  }
+  if (!e.target.closest('#telefoneCliente') && !e.target.closest('#listaSugestoesTelefone')) {
+    document.getElementById('listaSugestoesTelefone').style.display = 'none';
+  }
+});
 
 document.getElementById('btnDelivery').addEventListener('click', () => selecionarCanal('delivery'));
 document.getElementById('btnRetirada').addEventListener('click', () => selecionarCanal('retirada'));
@@ -194,4 +254,8 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   document.getElementById('observacoesPedido').value = '';
   document.getElementById('valorRecebido').value = '';
   atualizarListaItens();
+
+  fetch('http://localhost:3000/clientes', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(resposta => resposta.json())
+    .then(clientes => { clientesDisponiveis = clientes; });
 });

@@ -16,12 +16,22 @@ function carregarProdutos() {
           <td>${produto.nome}</td>
           <td>${produto.unidade_venda}</td>
           <td>R$ ${produto.preco}</td>
-          <td><button data-id="${produto.id}" class="btn-excluir-linha">Excluir</button></td>
+          <td>
+            <div class="acoes-linha">
+              <button data-id="${produto.id}" class="btn-editar-produto btn-editar-linha">Editar</button>
+              <button data-id="${produto.id}" class="btn-excluir-produto btn-excluir-linha">Excluir</button>
+            </div>
+          </td>
         `;
         corpo.appendChild(tr);
       });
 
-      document.querySelectorAll('.btn-excluir-linha').forEach(btn => {
+      document.querySelectorAll('.btn-editar-produto').forEach(btn => {
+        const produto = produtos.find(p => p.id === parseInt(btn.dataset.id));
+        btn.addEventListener('click', () => editarProduto(produto));
+      });
+
+      document.querySelectorAll('.btn-excluir-produto').forEach(btn => {
         btn.addEventListener('click', () => excluirProduto(parseInt(btn.dataset.id)));
       });
     });
@@ -50,6 +60,41 @@ document.getElementById('btnSalvarProduto').addEventListener('click', async () =
 
   carregarProdutos();
 });
+
+async function editarProduto(produto) {
+  const nome = prompt('Nome:', produto.nome);
+  if (nome === null) return;
+  const preco = prompt('Preço:', produto.preco);
+  if (preco === null) return;
+  const codigo = prompt('Código:', produto.codigo);
+  if (codigo === null) return;
+  const canal_venda = prompt('Canal de venda (convencional/delivery):', produto.canal_venda || '');
+  if (canal_venda === null) return;
+  const unidade_venda = prompt('Unidade (unidade/kg/pacote):', produto.unidade_venda || '');
+  if (unidade_venda === null) return;
+  const controlaEstoqueTexto = prompt('Controla estoque? (sim/nao):', produto.controla_estoque ? 'sim' : 'nao');
+  if (controlaEstoqueTexto === null) return;
+
+  await fetch('http://localhost:3000/produtos/' + produto.id, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+      nome,
+      preco,
+      codigo,
+      canal_venda,
+      unidade_venda,
+      controla_estoque: controlaEstoqueTexto.trim().toLowerCase() === 'sim',
+      quantidade_estoque: produto.quantidade_estoque,
+      imagem: produto.imagem
+    })
+  });
+
+  carregarProdutos();
+}
 
 async function excluirProduto(id) {
   await fetch('http://localhost:3000/produtos/' + id, {

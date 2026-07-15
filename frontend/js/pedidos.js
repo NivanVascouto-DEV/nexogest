@@ -4,8 +4,10 @@ const token = localStorage.getItem('token');
 let todosPedidos = [];
 let clientesMap = {};
 let produtosMap = {};
+let produtosLista = [];
 let itensPorPedido = {};
 let abaAtual = 'pendente';
+let edicaoAtual = null;
 
 const proximoStatus = {
   pendente: 'preparando',
@@ -39,8 +41,9 @@ async function carregarProdutosMap() {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const produtos = await resposta.json();
+  produtosLista = produtos;
   produtosMap = {};
-  produtos.forEach(p => { produtosMap[p.id] = p.nome; });
+  produtos.forEach(p => { produtosMap[p.id] = { nome: p.nome, preco: parseFloat(p.preco) }; });
 }
 
 async function carregarItensPorPedido() {
@@ -55,10 +58,15 @@ async function carregarItensPorPedido() {
   });
 }
 
+function nomeProduto(produtoId) {
+  const p = produtosMap[produtoId];
+  return p ? p.nome : 'Produto';
+}
+
 function resumoItens(pedidoId) {
   const itens = itensPorPedido[pedidoId] || [];
   if (itens.length === 0) return 'Sem itens registrados';
-  return itens.map(item => `${parseFloat(item.quantidade)}x ${produtosMap[item.produto_id] || 'Produto'}`).join(', ');
+  return itens.map(item => `${parseFloat(item.quantidade)}x ${nomeProduto(item.produto_id)}`).join(', ');
 }
 
 function carregarPedidos() {
@@ -99,6 +107,7 @@ function renderizarPedidos() {
 
   const container = document.getElementById('listaPedidos');
   container.innerHTML = '';
+  edicaoAtual = null;
 
   const filtrados = todosPedidos.filter(p => p.status === abaAtual);
 
@@ -112,6 +121,7 @@ function renderizarPedidos() {
     const nomeCliente = cliente ? cliente.nome : 'Cliente não identificado';
     const div = document.createElement('div');
     div.className = 'pedido-card';
+    div.dataset.pedidoId = pedido.id;
     div.innerHTML = `
       <div class="pedido-item-topo">
         <div>
@@ -133,6 +143,7 @@ function renderizarPedidos() {
         <button data-id="${pedido.id}" class="botao-acao btn-imprimir-cliente">Imprimir cliente</button>
         <button data-id="${pedido.id}" class="botao-acao btn-cancelar">Cancelar</button>
       </div>
+      <div class="pedido-edicao" style="display:none"></div>
     `;
     container.appendChild(div);
   });
@@ -142,7 +153,7 @@ function renderizarPedidos() {
   });
 
   document.querySelectorAll('.btn-editar').forEach(btn => {
-    btn.addEventListener('click', () => editarPedido(parseInt(btn.dataset.id)));
+    btn.addEventListener('click', () => abrirEdicaoPedido(parseInt(btn.dataset.id)));
   });
 
   document.querySelectorAll('.btn-cancelar').forEach(btn => {
@@ -226,36 +237,206 @@ async function cancelarPedido(id) {
   carregarPedidos();
 }
 
-// Edicao simples: dados do cliente + forma de pagamento + observacoes do
-// pedido. Editar os itens do pedido em si fica para uma tela dedicada futura.
-async function editarPedido(id) {
+// ---- Edicao inline do pedido (cliente, forma de pagamento, total, itens) ----
+
+function opcoesProdutos(selecionadoId) {
+  return produtosLista.map(p => `<option value="${p.id}"${p.id === selecionadoId ? ' selected' : ''}>${p.nome} — R$ ${p.preco}</option>`).join('');
+}
+
+function renderPainelEdicao(pedido) {
+  const itens = edicaoAtual.itens;
+  const valores = edicaoAtual.valores;
+  const itensHtml = itens.length === 0
+    ? '<p class="ts-small">Nenhum item.</p>'
+    : itens.map((item, indice) => `
+      <div class="item-adicionado">
+        <span>${item.quantidade}x ${item.nome} — R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+        <button type="button" class="btn-remover-item-edicao" data-indice="${indice}">✕</button>
+      </div>
+    `).join('');
+
+  return `
+    <div class="secao-form" style="margin: 0 14px 12px;">
+      <h3>Editar pedido #${pedido.id}</h3>
+
+      <label>Nome do cliente</label>
+      <input type="text" class="edit-nome" value="${valores.nome || ''}">
+      <label>Telefone</label>
+      <input type="text" class="edit-telefone" value="${valores.telefone || ''}">
+      <label>Endereço</label>
+      <input type="text" class="edit-endereco" value="${valores.endereco || ''}">
+
+      <label>Forma de pagamento</label>
+      <select class="edit-forma-pagamento">
+        <option value="dinheiro"${valores.forma_pagamento === 'dinheiro' ? ' selected' : ''}>Dinheiro</option>
+        <option value="pix"${valores.forma_pagamento === 'pix' ? ' selected' : ''}>Pix</option>
+        <option value="cartao"${valores.forma_pagamento === 'cartao' ? ' selected' : ''}>Cartão</option>
+      </select>
+
+      <label>Observações</label>
+      <textarea class="edit-observacoes">${valores.observacoes || ''}</textarea>
+
+      <label>Itens do pedido</label>
+      <div class="edit-itens-lista">${itensHtml}</div>
+      <div class="linha-adicionar-item">
+        <select class="edit-select-produto">${opcoesProdutos()}</select>
+        <input type="number" class="edit-qtd-item" value="1" min="1">
+        <button type="button" class="edit-btn-add-item">+ Adicionar</button>
+      </div>
+
+      <label>Total (editável manualmente, ex: para aplicar desconto)</label>
+      <input type="number" class="edit-total" step="0.01" value="${valores.total}">
+
+      <div style="display:flex; gap:8px;">
+        <button type="button" class="edit-btn-salvar">Salvar</button>
+        <button type="button" class="edit-btn-cancelar" style="background-color: var(--cor-texto-4);">Cancelar</button>
+      </div>
+    </div>
+  `;
+}
+
+function capturarValoresPainel(painel) {
+  return {
+    nome: painel.querySelector('.edit-nome').value,
+    telefone: painel.querySelector('.edit-telefone').value,
+    endereco: painel.querySelector('.edit-endereco').value,
+    forma_pagamento: painel.querySelector('.edit-forma-pagamento').value,
+    observacoes: painel.querySelector('.edit-observacoes').value,
+    total: painel.querySelector('.edit-total').value
+  };
+}
+
+function fecharPaineisEdicao() {
+  document.querySelectorAll('.pedido-edicao').forEach(painel => {
+    painel.style.display = 'none';
+    painel.innerHTML = '';
+  });
+  edicaoAtual = null;
+}
+
+function abrirEdicaoPedido(id) {
+  const jaAberto = edicaoAtual && edicaoAtual.pedidoId === id;
+  fecharPaineisEdicao();
+  if (jaAberto) return;
+
   const pedido = todosPedidos.find(p => p.id === id);
   const cliente = clientesMap[pedido.cliente_id] || {};
+  const itensAtuais = (itensPorPedido[id] || []).map(item => ({
+    produto_id: item.produto_id,
+    nome: nomeProduto(item.produto_id),
+    preco: parseFloat(item.preco_unitario),
+    quantidade: parseFloat(item.quantidade)
+  }));
 
-  const nome = prompt('Nome do cliente:', cliente.nome || '');
-  if (nome === null) return;
-  const telefone = prompt('Telefone:', cliente.telefone || '');
-  if (telefone === null) return;
-  const endereco = prompt('Endereço:', cliente.endereco || '');
-  if (endereco === null) return;
-  const observacoes = prompt('Observações:', pedido.observacoes || '');
-  if (observacoes === null) return;
+  edicaoAtual = {
+    pedidoId: id,
+    itens: itensAtuais,
+    valores: {
+      nome: cliente.nome || '',
+      telefone: cliente.telefone || '',
+      endereco: cliente.endereco || '',
+      forma_pagamento: pedido.forma_pagamento || '',
+      observacoes: pedido.observacoes || '',
+      total: pedido.total
+    }
+  };
 
-  if (pedido.cliente_id) {
-    await fetch('http://localhost:3000/clientes/' + pedido.cliente_id, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({ nome, telefone, endereco })
+  const card = document.querySelector(`.pedido-card[data-pedido-id="${id}"]`);
+  const painel = card.querySelector('.pedido-edicao');
+  painel.innerHTML = renderPainelEdicao(pedido);
+  painel.style.display = 'block';
+
+  wirePainelEdicao(card, pedido);
+}
+
+function wirePainelEdicao(card, pedido) {
+  const painel = card.querySelector('.pedido-edicao');
+
+  painel.querySelector('.edit-btn-add-item').addEventListener('click', () => {
+    const select = painel.querySelector('.edit-select-produto');
+    const produtoId = parseInt(select.value);
+    const quantidade = parseInt(painel.querySelector('.edit-qtd-item').value) || 1;
+    const produto = produtosMap[produtoId];
+    if (!produto) return;
+
+    const existente = edicaoAtual.itens.find(i => i.produto_id === produtoId);
+    if (existente) {
+      existente.quantidade += quantidade;
+    } else {
+      edicaoAtual.itens.push({ produto_id: produtoId, nome: produto.nome, preco: produto.preco, quantidade });
+    }
+
+    edicaoAtual.valores = capturarValoresPainel(painel);
+    painel.innerHTML = renderPainelEdicao(pedido);
+    wirePainelEdicao(card, pedido);
+  });
+
+  painel.querySelectorAll('.btn-remover-item-edicao').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const indice = parseInt(btn.dataset.indice);
+      edicaoAtual.itens.splice(indice, 1);
+      edicaoAtual.valores = capturarValoresPainel(painel);
+      painel.innerHTML = renderPainelEdicao(pedido);
+      wirePainelEdicao(card, pedido);
     });
-  }
+  });
 
-  await salvarPedido(pedido, { observacoes });
+  painel.querySelector('.edit-btn-cancelar').addEventListener('click', () => {
+    fecharPaineisEdicao();
+  });
 
-  await carregarClientesMap();
-  carregarPedidos();
+  painel.querySelector('.edit-btn-salvar').addEventListener('click', async () => {
+    const btnSalvar = painel.querySelector('.edit-btn-salvar');
+    btnSalvar.disabled = true;
+    btnSalvar.textContent = 'Salvando...';
+
+    const nome = painel.querySelector('.edit-nome').value;
+    const telefone = painel.querySelector('.edit-telefone').value;
+    const endereco = painel.querySelector('.edit-endereco').value;
+    const forma_pagamento = painel.querySelector('.edit-forma-pagamento').value;
+    const observacoes = painel.querySelector('.edit-observacoes').value;
+    const total = parseFloat(painel.querySelector('.edit-total').value) || 0;
+
+    if (pedido.cliente_id) {
+      await fetch('http://localhost:3000/clientes/' + pedido.cliente_id, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ nome, telefone, endereco })
+      });
+    }
+
+    await salvarPedido(pedido, { forma_pagamento, observacoes, total });
+
+    const itensExistentes = itensPorPedido[pedido.id] || [];
+    for (const item of itensExistentes) {
+      await fetch('http://localhost:3000/itens-pedido/' + item.id, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+    }
+
+    for (const item of edicaoAtual.itens) {
+      await fetch('http://localhost:3000/itens-pedido', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          pedido_id: pedido.id,
+          produto_id: item.produto_id,
+          quantidade: item.quantidade,
+          preco_unitario: item.preco
+        })
+      });
+    }
+
+    await Promise.all([carregarClientesMap(), carregarItensPorPedido()]);
+    carregarPedidos();
+  });
 }
 
 document.querySelectorAll('.aba-btn').forEach(btn => {

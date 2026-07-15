@@ -18,9 +18,15 @@
         <button type="button" class="botao-canal" data-canal="retirada" id="btnRetirada">Retirada</button>
       </div>
       <label for="nomeCliente">Nome</label>
-      <input type="text" id="nomeCliente" placeholder="Nome">
+      <div style="position: relative;">
+        <input type="text" id="nomeCliente" placeholder="Nome" autocomplete="off">
+        <div class="autocomplete-lista" id="listaSugestoesNome"></div>
+      </div>
       <label for="telefoneCliente">Telefone</label>
-      <input type="text" id="telefoneCliente" placeholder="11999999999">
+      <div style="position: relative;">
+        <input type="text" id="telefoneCliente" placeholder="11999999999" autocomplete="off">
+        <div class="autocomplete-lista" id="listaSugestoesTelefone"></div>
+      </div>
       <label for="enderecoCliente">Endereço</label>
       <input type="text" id="enderecoCliente" placeholder="Rua, número - Bairro">
     </div>
@@ -47,7 +53,7 @@
     <div class="resumo-caixa" id="resumoCaixa"></div>
 
     <div class="secao-form">
-      <h3>💰 Troco (cálculo local, não salva no banco)</h3>
+      <h3>💰 Troco</h3>
       <label for="valorRecebido">Valor recebido</label>
       <input type="number" id="valorRecebido" placeholder="0.00" step="0.01">
       <p class="troco-resultado" id="resultadoTroco"></p>

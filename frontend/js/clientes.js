@@ -35,6 +35,32 @@ function carregarClientes() {
     });
 }
 
+document.getElementById('btnSalvarCliente').addEventListener('click', async () => {
+  const nome = document.getElementById('nomeCliente').value;
+  const telefone = document.getElementById('telefoneCliente').value;
+  const endereco = document.getElementById('enderecoCliente').value;
+
+  if (!nome || !telefone) {
+    alert('Informe ao menos nome e telefone.');
+    return;
+  }
+
+  await fetch('http://localhost:3000/clientes', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({ nome, telefone, endereco })
+  });
+
+  document.getElementById('nomeCliente').value = '';
+  document.getElementById('telefoneCliente').value = '';
+  document.getElementById('enderecoCliente').value = '';
+
+  carregarClientes();
+});
+
 async function editarCliente(cliente) {
   const nome = prompt('Nome:', cliente.nome);
   if (nome === null) return;
