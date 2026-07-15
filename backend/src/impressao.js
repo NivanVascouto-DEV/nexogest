@@ -32,7 +32,7 @@ async function buscarDadosPedido(id) {
   if (resultadoPedido.rows.length === 0) return null;
 
   const resultadoItens = await pool.query(
-    `SELECT ip.quantidade, ip.preco_unitario, pr.nome AS produto_nome
+    `SELECT ip.quantidade, ip.preco_unitario, pr.nome AS produto_nome, pr.unidade_venda AS produto_unidade
      FROM itens_pedido ip
      JOIN produtos pr ON pr.id = ip.produto_id
      WHERE ip.pedido_id = $1`,
@@ -40,6 +40,32 @@ async function buscarDadosPedido(id) {
   );
 
   return { pedido: resultadoPedido.rows[0], itens: resultadoItens.rows };
+}
+
+// Produtos por kg imprimem o peso (gramas abaixo de 1kg, kg com vírgula a
+// partir de 1kg) em vez de "0.5x", que parece meia unidade em vez de meio quilo.
+function formatarItemQuantidade(item) {
+  const quantidade = parseFloat(item.quantidade);
+
+  if (item.produto_unidade !== 'kg') {
+    return `${quantidade}x`;
+  }
+
+  if (quantidade < 1) {
+    return `${Math.round(quantidade * 1000)}g`;
+  }
+
+  const kgArredondado = Math.round(quantidade * 10) / 10;
+  const texto = Number.isInteger(kgArredondado) ? kgArredondado.toFixed(0) : kgArredondado.toFixed(1).replace('.', ',');
+  return `${texto}kg`;
+}
+
+// cut() do node-thermal-printer avanca 2x4=8 linhas em branco por padrao antes
+// do corte. Usamos o comando ESC/POS bruto para avancar so o necessario.
+function avancarECortar(printer, linhas = 3) {
+  printer.add(Buffer.from([0x1b, 0x64, linhas]));
+  printer.add(Buffer.from([0x1d, 0x56, 0x00]));
+  printer.initHardware();
 }
 
 function criarImpressora(largura) {
@@ -66,21 +92,22 @@ function montarCupomEstabelecimento(printer, dados) {
 
   printer.alignCenter();
   printer.bold(true);
+  printer.setTextDoubleHeight();
   printer.println('DELICIAS DA MARY');
+  printer.setTextNormal();
   printer.println('VIA COZINHA');
   printer.bold(false);
-  printer.drawLine();
+  printer.drawLine('.');
 
   printer.alignLeft();
   printer.leftRight(`Pedido #${pedido.id}`, formatarDataHora(pedido.data_pedido));
   printer.println(`Cliente: ${pedido.cliente_nome || '-'}`);
-  printer.drawLine();
+  printer.drawLine('.');
 
   itens.forEach((item) => {
-    const qtd = parseFloat(item.quantidade);
-    printer.println(`${qtd}x ${item.produto_nome}`);
+    printer.println(`${formatarItemQuantidade(item)} ${item.produto_nome}`);
   });
-  printer.drawLine();
+  printer.drawLine('.');
 
   if (pedido.observacoes && pedido.observacoes.trim()) {
     printer.bold(true);
@@ -89,8 +116,7 @@ function montarCupomEstabelecimento(printer, dados) {
     printer.bold(false);
   }
 
-  printer.newLine();
-  printer.cut();
+  avancarECortar(printer);
 }
 
 // Via que acompanha o produto: visual limpo, sem jargao interno.
@@ -99,23 +125,25 @@ function montarCupomCliente(printer, dados) {
 
   printer.alignCenter();
   printer.bold(true);
+  printer.setTextDoubleHeight();
   printer.println('DELICIAS DA MARY');
+  printer.setTextNormal();
   printer.bold(false);
-  printer.drawLine();
+  printer.drawLine('.');
 
   printer.alignLeft();
   printer.println(`Cliente: ${pedido.cliente_nome || '-'}`);
   if (pedido.cliente_endereco) {
     printer.println(`Endereco: ${pedido.cliente_endereco}`);
   }
-  printer.drawLine();
+  printer.drawLine('.');
 
   itens.forEach((item) => {
     const qtd = parseFloat(item.quantidade);
     const subtotal = (qtd * parseFloat(item.preco_unitario)).toFixed(2);
-    printer.leftRight(`${qtd}x ${item.produto_nome}`, `R$ ${subtotal}`);
+    printer.leftRight(`${formatarItemQuantidade(item)} ${item.produto_nome}`, `R$ ${subtotal}`);
   });
-  printer.drawLine();
+  printer.drawLine('.');
 
   printer.bold(true);
   printer.leftRight('TOTAL', `R$ ${parseFloat(pedido.total).toFixed(2)}`);
@@ -127,8 +155,11 @@ function montarCupomCliente(printer, dados) {
     printer.leftRight('Troco', `R$ ${troco.toFixed(2)}`);
   }
 
-  printer.newLine();
-  printer.cut();
+  printer.drawLine('.');
+  printer.alignCenter();
+  printer.println('Obrigado pela preferência <3');
+
+  avancarECortar(printer);
 }
 
 function mensagemNaoConfigurada() {
