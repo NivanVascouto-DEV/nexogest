@@ -46,6 +46,18 @@
     </div>
 
     <div class="secao-form">
+      <h3>💳 Pagamento</h3>
+      <label for="formaPagamento">Forma de pagamento</label>
+      <select id="formaPagamento">
+        <option value="dinheiro">Dinheiro</option>
+        <option value="pix">Pix</option>
+        <option value="cartao">Cartão</option>
+      </select>
+      <label for="totalEditavel">Total do pedido</label>
+      <input type="number" id="totalEditavel" step="0.01" placeholder="0.00">
+    </div>
+
+    <div class="secao-form">
       <h3>📝 Observações</h3>
       <textarea id="observacoesPedido" placeholder="Ex: sem cebola, entregar após 19h"></textarea>
     </div>

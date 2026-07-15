@@ -8,6 +8,8 @@ let produtosLista = [];
 let itensPorPedido = {};
 let abaAtual = 'pendente';
 let edicaoAtual = null;
+let pedidoHoverId = null;
+let pedidoFocoClicado = null;
 
 const proximoStatus = {
   pendente: 'preparando',
@@ -145,6 +147,10 @@ function renderizarPedidos() {
       </div>
       <div class="pedido-edicao" style="display:none"></div>
     `;
+    div.addEventListener('mouseenter', () => { pedidoHoverId = pedido.id; });
+    div.addEventListener('mouseleave', () => { if (pedidoHoverId === pedido.id) pedidoHoverId = null; });
+    div.addEventListener('click', () => { pedidoFocoClicado = pedido.id; });
+
     container.appendChild(div);
   });
 
@@ -447,6 +453,29 @@ document.querySelectorAll('.aba-btn').forEach(btn => {
     btn.classList.add('aba-ativa');
     renderizarPedidos();
   });
+});
+
+document.addEventListener('keydown', (e) => {
+  const alvo = document.activeElement;
+  const editando = alvo && ['INPUT', 'TEXTAREA', 'SELECT'].includes(alvo.tagName);
+  if (editando) return;
+
+  const id = pedidoHoverId || pedidoFocoClicado;
+  if (!id) return;
+
+  const tecla = e.key.toLowerCase();
+
+  if (tecla === 'a') {
+    mudarStatus(id);
+  } else if (tecla === 'c') {
+    const btn = document.querySelector(`.btn-imprimir-cozinha[data-id="${id}"]`);
+    if (btn) imprimir(id, 'estabelecimento', btn);
+  } else if (tecla === 'l') {
+    const btn = document.querySelector(`.btn-imprimir-cliente[data-id="${id}"]`);
+    if (btn) imprimir(id, 'cliente', btn);
+  } else if (tecla === 'x') {
+    cancelarPedido(id);
+  }
 });
 
 Promise.all([carregarClientesMap(), carregarProdutosMap(), carregarItensPorPedido()]).then(carregarPedidos);

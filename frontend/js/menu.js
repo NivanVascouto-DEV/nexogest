@@ -114,5 +114,18 @@ if (corSalva) {
 }
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
+  navigator.serviceWorker.register('sw.js').then((registro) => {
+    // O navegador só reconfere o sw.js a cada 24h por padrão. Forçamos a
+    // checagem em toda carga de página para que uma nova versão do cache
+    // (ex: nexogest-v4 -> v5) entre em vigor imediatamente, sem depender
+    // de esperar o navegador decidir revalidar por conta própria.
+    registro.update();
+  });
+
+  let jaRecarregou = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (jaRecarregou) return;
+    jaRecarregou = true;
+    window.location.reload();
+  });
 }

@@ -113,6 +113,12 @@ function calcularTotal() {
   return pedidoAtual.reduce((soma, item) => soma + item.preco * item.quantidade, 0);
 }
 
+function totalFinal() {
+  const totalInput = document.getElementById('totalEditavel');
+  const valor = parseFloat(totalInput.value);
+  return isNaN(valor) ? calcularTotal() : valor;
+}
+
 function atualizarListaItens() {
   const container = document.getElementById('listaItensPedido');
 
@@ -137,6 +143,7 @@ function atualizarListaItens() {
 function atualizarResumo() {
   const resumo = document.getElementById('resumoCaixa');
   const total = calcularTotal();
+  document.getElementById('totalEditavel').value = total.toFixed(2);
 
   if (pedidoAtual.length === 0) {
     resumo.innerHTML = '';
@@ -150,7 +157,7 @@ function atualizarResumo() {
 }
 
 function atualizarTroco() {
-  const total = calcularTotal();
+  const total = totalFinal();
   const valorRecebido = parseFloat(document.getElementById('valorRecebido').value);
   const resultado = document.getElementById('resultadoTroco');
 
@@ -171,6 +178,7 @@ function atualizarTroco() {
 }
 
 document.getElementById('valorRecebido').addEventListener('input', atualizarTroco);
+document.getElementById('totalEditavel').addEventListener('input', atualizarTroco);
 
 async function buscarOuCriarCliente(nome, telefone, endereco) {
   const resposta = await fetch('http://localhost:3000/clientes', {
@@ -203,7 +211,8 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
     return;
   }
 
-  const total = calcularTotal();
+  const total = totalFinal();
+  const forma_pagamento = document.getElementById('formaPagamento').value;
   const nome = document.getElementById('nomeCliente').value;
   const telefone = document.getElementById('telefoneCliente').value;
   const endereco = document.getElementById('enderecoCliente').value;
@@ -221,7 +230,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
       usuario_id: parseInt(localStorage.getItem('id')),
       canal_venda: canalSelecionado,
       status: 'pendente',
-      forma_pagamento: '',
+      forma_pagamento: forma_pagamento,
       total: total,
       observacoes: observacoes
     })
@@ -253,6 +262,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   document.getElementById('enderecoCliente').value = '';
   document.getElementById('observacoesPedido').value = '';
   document.getElementById('valorRecebido').value = '';
+  document.getElementById('formaPagamento').value = 'dinheiro';
   atualizarListaItens();
 
   fetch('http://localhost:3000/clientes', { headers: { 'Authorization': 'Bearer ' + token } })
