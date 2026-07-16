@@ -5,14 +5,27 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 
+// Em producao, restringe o CORS a origem do frontend publicado (FRONTEND_URL).
+// Sem essa variavel (desenvolvimento local), libera qualquer origem, ja que o
+// frontend local pode ser acessado por localhost ou pelo IP da maquina na rede.
+const origemPermitida = process.env.FRONTEND_URL || '*';
+
 const servidorHttp = http.createServer(app);
 const io = new Server(servidorHttp, {
-  cors: { origin: '*' }
+  cors: { origin: origemPermitida }
 });
 app.set('io', io);
 
+const SALA_AGENTES_IMPRESSAO = 'agentes-impressao';
+io.on('connection', (socket) => {
+  socket.on('registrar-agente', () => {
+    socket.join(SALA_AGENTES_IMPRESSAO);
+    console.log(`Agente de impressão conectado (${socket.id})`);
+  });
+});
+
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: origemPermitida }));
 
 app.get('/', (req, res) => {
   res.send('NexoGest backend rodando!');
@@ -54,17 +67,6 @@ app.use('/relatorios', verificarToken, verificarPapel(['admin', 'contador']), re
 
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
-
-const { testarImpressora } = require('./impressao');
-app.get('/impressora/testar', verificarToken, verificarPapel(['admin', 'contador']), async (req, res) => {
-    try {
-        const resultado = await testarImpressora();
-        res.json({ conectada: true, ...resultado, mensagem: 'Impressora respondeu com sucesso.' });
-    } catch (erro) {
-        const status = erro.impressoraNaoConfigurada ? 503 : 500;
-        res.status(status).json({ conectada: false, mensagem: erro.message });
-    }
-});
 
 const PORTA = process.env.PORT || 3000;
 servidorHttp.listen(PORTA, () => {

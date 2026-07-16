@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const {
-    buscarDadosPedido,
-    criarImpressora,
-    montarCupomEstabelecimento,
-    montarCupomCliente,
-    enviarParaImpressora
-} = require('../impressao');
+const { buscarDadosPedido } = require('../impressao');
+
+const SALA_AGENTES_IMPRESSAO = 'agentes-impressao';
+
+function haAgenteConectado(io) {
+    const sala = io.sockets.adapter.rooms.get(SALA_AGENTES_IMPRESSAO);
+    return !!sala && sala.size > 0;
+}
 
 router.get('/', async (req, res) => {
     try {
@@ -65,23 +66,22 @@ router.post('/:id/imprimir/estabelecimento', async (req, res) => {
     try {
         const { id } = req.params;
         const { largura } = req.body;
+        const io = req.app.get('io');
 
         const dados = await buscarDadosPedido(id);
         if (!dados) {
             return res.status(404).json({ mensagem: 'Pedido não encontrado' });
         }
 
-        const printer = criarImpressora(largura);
-        montarCupomEstabelecimento(printer, dados);
-        await enviarParaImpressora(printer);
+        if (!haAgenteConectado(io)) {
+            return res.status(503).json({ mensagem: 'Nenhum agente de impressão conectado no momento.' });
+        }
 
-        res.json({ mensagem: 'Via da cozinha enviada para impressão' });
+        io.to(SALA_AGENTES_IMPRESSAO).emit('imprimir-pedido', { tipo: 'estabelecimento', largura, dados });
+        res.json({ mensagem: 'Via da cozinha enviada para o agente de impressão' });
     } catch (erro) {
         console.error(erro);
-        if (erro.impressoraNaoConfigurada) {
-            return res.status(503).json({ mensagem: erro.message });
-        }
-        res.status(500).json({ mensagem: 'Erro ao imprimir via da cozinha. Verifique se a impressora está conectada.' });
+        res.status(500).json({ mensagem: 'Erro ao solicitar impressão da via da cozinha.' });
     }
 });
 
@@ -89,23 +89,22 @@ router.post('/:id/imprimir/cliente', async (req, res) => {
     try {
         const { id } = req.params;
         const { largura } = req.body;
+        const io = req.app.get('io');
 
         const dados = await buscarDadosPedido(id);
         if (!dados) {
             return res.status(404).json({ mensagem: 'Pedido não encontrado' });
         }
 
-        const printer = criarImpressora(largura);
-        montarCupomCliente(printer, dados);
-        await enviarParaImpressora(printer);
+        if (!haAgenteConectado(io)) {
+            return res.status(503).json({ mensagem: 'Nenhum agente de impressão conectado no momento.' });
+        }
 
-        res.json({ mensagem: 'Via do cliente enviada para impressão' });
+        io.to(SALA_AGENTES_IMPRESSAO).emit('imprimir-pedido', { tipo: 'cliente', largura, dados });
+        res.json({ mensagem: 'Via do cliente enviada para o agente de impressão' });
     } catch (erro) {
         console.error(erro);
-        if (erro.impressoraNaoConfigurada) {
-            return res.status(503).json({ mensagem: erro.message });
-        }
-        res.status(500).json({ mensagem: 'Erro ao imprimir via do cliente. Verifique se a impressora está conectada.' });
+        res.status(500).json({ mensagem: 'Erro ao solicitar impressão da via do cliente.' });
     }
 });
 

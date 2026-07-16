@@ -1,0 +1,18 @@
+{
+  "name": "agente-impressao",
+  "version": "1.0.0",
+  "description": "Agente local que conecta ao backend do NexoGest via Socket.io e imprime os cupons na impressora termica conectada nesta maquina.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "node-thermal-printer": "^4.6.0",
+    "socket.io-client": "^4.8.3"
+  }
+}
