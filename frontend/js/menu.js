@@ -28,7 +28,6 @@ function criarMenu() {
     { arquivo: 'clientes.html', label: 'Clientes' },
     { arquivo: 'financeiro.html', label: 'Financeiro', restrito: true },
     { arquivo: 'historico.html', label: 'Histórico', restrito: true },
-    { arquivo: 'custo.html', label: 'Custo', restrito: true },
     { arquivo: 'configuracoes.html', label: 'Configurações' }
   ];
 
@@ -128,4 +127,18 @@ if ('serviceWorker' in navigator) {
     jaRecarregou = true;
     window.location.reload();
   });
+}
+
+function mostrarToast(mensagem) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = mensagem;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add('toast-visivel'));
+
+  setTimeout(() => {
+    toast.classList.remove('toast-visivel');
+    setTimeout(() => toast.remove(), 300);
+  }, 2800);
 }

@@ -68,6 +68,7 @@ async function registrarEntrada(produto) {
     })
   });
 
+  mostrarToast('Estoque atualizado com sucesso!');
   carregarEstoque();
 }
 

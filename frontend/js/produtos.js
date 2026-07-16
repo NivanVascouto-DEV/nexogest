@@ -58,6 +58,7 @@ document.getElementById('btnSalvarProduto').addEventListener('click', async () =
   document.getElementById('precoProduto').value = '';
   document.getElementById('codigoProduto').value = '';
 
+  mostrarToast('Produto salvo com sucesso!');
   carregarProdutos();
 });
 
@@ -93,6 +94,7 @@ async function editarProduto(produto) {
     })
   });
 
+  mostrarToast('Produto atualizado com sucesso!');
   carregarProdutos();
 }
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-const CATEGORIAS_VALIDAS = ['pessoal', 'administrativa', 'marketing', 'tributos', 'financeira'];
+const CATEGORIAS_VALIDAS = ['pessoal', 'administrativa', 'marketing', 'tributos', 'financeira', 'cmv'];
 
 router.get('/', async (req, res) => {
     try {

@@ -443,6 +443,7 @@ function wirePainelEdicao(card, pedido) {
     }
 
     await Promise.all([carregarClientesMap(), carregarItensPorPedido()]);
+    mostrarToast('Pedido atualizado com sucesso!');
     carregarPedidos();
   });
 }

@@ -28,7 +28,7 @@ document.getElementById('btnSalvarConfig').addEventListener('click', () => {
   document.body.classList.toggle('dark-mode', tema === 'escuro');
   document.documentElement.style.setProperty('--cor-destaque', cor);
 
-  alert('Configurações salvas!');
+  mostrarToast('Configurações salvas!');
 });
 
 carregarConfiguracoes();

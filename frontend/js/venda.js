@@ -325,7 +325,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
     });
   }
 
-  alert('Pedido finalizado com sucesso!');
+  mostrarToast('Pedido finalizado com sucesso!');
   pedidoAtual = [];
   selecionarCanal('delivery');
   document.getElementById('nomeCliente').value = '';

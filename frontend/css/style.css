@@ -875,3 +875,30 @@ body:has(.atalhos-legenda) .container-tela {
   width: auto;
   padding: 10px 16px;
 }
+
+/* Toast de sucesso (nao bloqueia a tela, some sozinho) */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translate(-50%, 12px);
+  background-color: var(--cor-destaque);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: var(--raio-card);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  font-size: 13px;
+  font-weight: 600;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
+  text-align: center;
+}
+
+.toast.toast-visivel {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

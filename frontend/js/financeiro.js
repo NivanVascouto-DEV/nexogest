@@ -91,6 +91,7 @@ async function excluirDespesa(id) {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   carregarDespesas();
+  carregarDRE();
 }
 
 function carregarDespesas() {
@@ -142,7 +143,9 @@ document.getElementById('btnSalvarDespesa').addEventListener('click', async () =
   document.getElementById('valorDespesa').value = '';
   document.getElementById('vencimentoDespesa').value = '';
 
+  mostrarToast('Lançamento salvo com sucesso!');
   carregarDespesas();
+  carregarDRE();
 });
 
 carregarDRE();

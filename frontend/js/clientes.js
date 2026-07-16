@@ -58,6 +58,7 @@ document.getElementById('btnSalvarCliente').addEventListener('click', async () =
   document.getElementById('telefoneCliente').value = '';
   document.getElementById('enderecoCliente').value = '';
 
+  mostrarToast('Cliente salvo com sucesso!');
   carregarClientes();
 });
 
@@ -78,6 +79,7 @@ async function editarCliente(cliente) {
     body: JSON.stringify({ nome, telefone, endereco })
   });
 
+  mostrarToast('Cliente atualizado com sucesso!');
   carregarClientes();
 }
 
