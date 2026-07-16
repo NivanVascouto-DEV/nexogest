@@ -1,7 +1,7 @@
 const token = localStorage.getItem('token');
 
 function carregarProdutos() {
-  fetch('http://localhost:3000/produtos', {
+  fetch(`${API_URL}/produtos`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
@@ -45,7 +45,7 @@ document.getElementById('btnSalvarProduto').addEventListener('click', async () =
   const unidade_venda = document.getElementById('unidadeVenda').value;
   const controla_estoque = document.getElementById('controlaEstoque').checked;
 
-  await fetch('http://localhost:3000/produtos', {
+  await fetch(`${API_URL}/produtos`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ async function editarProduto(produto) {
   const controlaEstoqueTexto = prompt('Controla estoque? (sim/nao):', produto.controla_estoque ? 'sim' : 'nao');
   if (controlaEstoqueTexto === null) return;
 
-  await fetch('http://localhost:3000/produtos/' + produto.id, {
+  await fetch(`${API_URL}/produtos/` + produto.id, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ async function editarProduto(produto) {
 }
 
 async function excluirProduto(id) {
-  await fetch('http://localhost:3000/produtos/' + id, {
+  await fetch(`${API_URL}/produtos/` + id, {
     method: 'DELETE',
     headers: { 'Authorization': 'Bearer ' + token }
   });

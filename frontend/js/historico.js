@@ -8,7 +8,7 @@ let detalhesAbertos = null;
 const ROTULO_PAGAMENTO = { dinheiro: 'Dinheiro', pix: 'Pix', cartao: 'Cartão' };
 
 async function carregarClientesMap() {
-  const resposta = await fetch('http://localhost:3000/clientes?todos=1', {
+  const resposta = await fetch(`${API_URL}/clientes?todos=1`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const clientes = await resposta.json();
@@ -17,7 +17,7 @@ async function carregarClientesMap() {
 }
 
 async function carregarProdutosMap() {
-  const resposta = await fetch('http://localhost:3000/produtos?todos=1', {
+  const resposta = await fetch(`${API_URL}/produtos?todos=1`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const produtos = await resposta.json();
@@ -26,7 +26,7 @@ async function carregarProdutosMap() {
 }
 
 async function carregarItensPorPedido() {
-  const resposta = await fetch('http://localhost:3000/itens-pedido', {
+  const resposta = await fetch(`${API_URL}/itens-pedido`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const itens = await resposta.json();
@@ -40,7 +40,7 @@ async function carregarItensPorPedido() {
 async function carregarHistorico() {
   await Promise.all([carregarClientesMap(), carregarProdutosMap(), carregarItensPorPedido()]);
 
-  fetch('http://localhost:3000/pedidos', {
+  fetch(`${API_URL}/pedidos`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())

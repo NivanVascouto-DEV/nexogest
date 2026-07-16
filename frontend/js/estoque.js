@@ -2,7 +2,7 @@ const token = localStorage.getItem('token');
 const LIMITE_ESTOQUE_BAIXO = 10;
 
 function carregarEstoque() {
-  fetch('http://localhost:3000/produtos', {
+  fetch(`${API_URL}/produtos`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
@@ -50,7 +50,7 @@ async function registrarEntrada(produto) {
   const quantidadeAtual = parseFloat(produto.quantidade_estoque) || 0;
   const novaQuantidade = quantidadeAtual + quantidadeAdicionar;
 
-  await fetch('http://localhost:3000/produtos/' + produto.id, {
+  await fetch(`${API_URL}/produtos/` + produto.id, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

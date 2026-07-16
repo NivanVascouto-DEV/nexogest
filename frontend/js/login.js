@@ -7,7 +7,7 @@ document.getElementById('btnEntrar').addEventListener('click', () => {
   const senha = document.getElementById('senha').value;
   const mensagemErro = document.getElementById('mensagemErro');
 
-  fetch('http://localhost:3000/auth/login', {
+  fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ login, senha })

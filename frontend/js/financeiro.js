@@ -2,7 +2,7 @@ const token = localStorage.getItem('token');
 let todasDespesas = [];
 
 function carregarDRE() {
-  fetch('http://localhost:3000/relatorios/dre', {
+  fetch(`${API_URL}/relatorios/dre`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
@@ -22,7 +22,7 @@ function carregarDRE() {
 }
 
 function carregarPagamentos() {
-  fetch('http://localhost:3000/relatorios/pagamentos', {
+  fetch(`${API_URL}/relatorios/pagamentos`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
@@ -86,7 +86,7 @@ function renderizarDespesas(despesas) {
 
 async function excluirDespesa(id) {
   if (!confirm('Excluir este lançamento?')) return;
-  await fetch('http://localhost:3000/lancamentos-financeiros/' + id, {
+  await fetch(`${API_URL}/lancamentos-financeiros/` + id, {
     method: 'DELETE',
     headers: { 'Authorization': 'Bearer ' + token }
   });
@@ -95,7 +95,7 @@ async function excluirDespesa(id) {
 }
 
 function carregarDespesas() {
-  fetch('http://localhost:3000/lancamentos-financeiros', {
+  fetch(`${API_URL}/lancamentos-financeiros`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
@@ -130,7 +130,7 @@ document.getElementById('btnSalvarDespesa').addEventListener('click', async () =
   const forma_pagamento = document.getElementById('formaPagamentoDespesa').value;
   const data_vencimento = document.getElementById('vencimentoDespesa').value;
 
-  await fetch('http://localhost:3000/lancamentos-financeiros', {
+  await fetch(`${API_URL}/lancamentos-financeiros`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

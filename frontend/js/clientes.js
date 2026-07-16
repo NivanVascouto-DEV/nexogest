@@ -1,7 +1,7 @@
 const token = localStorage.getItem('token');
 
 function carregarClientes() {
-  fetch('http://localhost:3000/clientes', {
+  fetch(`${API_URL}/clientes`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
@@ -45,7 +45,7 @@ document.getElementById('btnSalvarCliente').addEventListener('click', async () =
     return;
   }
 
-  await fetch('http://localhost:3000/clientes', {
+  await fetch(`${API_URL}/clientes`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ async function editarCliente(cliente) {
   const endereco = prompt('Endereço:', cliente.endereco || '');
   if (endereco === null) return;
 
-  await fetch('http://localhost:3000/clientes/' + cliente.id, {
+  await fetch(`${API_URL}/clientes/` + cliente.id, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ async function editarCliente(cliente) {
 }
 
 async function excluirCliente(id) {
-  await fetch('http://localhost:3000/clientes/' + id, {
+  await fetch(`${API_URL}/clientes/` + id, {
     method: 'DELETE',
     headers: { 'Authorization': 'Bearer ' + token }
   });

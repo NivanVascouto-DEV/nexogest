@@ -31,7 +31,7 @@ function capitalizar(texto) {
 }
 
 async function carregarClientesMap() {
-  const resposta = await fetch('http://localhost:3000/clientes?todos=1', {
+  const resposta = await fetch(`${API_URL}/clientes?todos=1`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const clientes = await resposta.json();
@@ -40,7 +40,7 @@ async function carregarClientesMap() {
 }
 
 async function carregarProdutosMap() {
-  const resposta = await fetch('http://localhost:3000/produtos?todos=1', {
+  const resposta = await fetch(`${API_URL}/produtos?todos=1`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const produtos = await resposta.json();
@@ -50,7 +50,7 @@ async function carregarProdutosMap() {
 }
 
 async function carregarItensPorPedido() {
-  const resposta = await fetch('http://localhost:3000/itens-pedido', {
+  const resposta = await fetch(`${API_URL}/itens-pedido`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const itens = await resposta.json();
@@ -73,7 +73,7 @@ function resumoItens(pedidoId) {
 }
 
 function carregarPedidos() {
-  fetch('http://localhost:3000/pedidos', {
+  fetch(`${API_URL}/pedidos`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
@@ -184,7 +184,7 @@ async function imprimir(pedidoId, tipo, btn) {
   btn.textContent = 'Imprimindo...';
 
   try {
-    const resposta = await fetch(`http://localhost:3000/pedidos/${pedidoId}/imprimir/${tipo}`, {
+    const resposta = await fetch(`${API_URL}/pedidos/${pedidoId}/imprimir/${tipo}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -205,7 +205,7 @@ async function imprimir(pedidoId, tipo, btn) {
 }
 
 async function salvarPedido(pedido, campos) {
-  await fetch('http://localhost:3000/pedidos/' + pedido.id, {
+  await fetch(`${API_URL}/pedidos/` + pedido.id, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -408,7 +408,7 @@ function wirePainelEdicao(card, pedido) {
     const total = parseFloat(painel.querySelector('.edit-total').value) || 0;
 
     if (pedido.cliente_id) {
-      await fetch('http://localhost:3000/clientes/' + pedido.cliente_id, {
+      await fetch(`${API_URL}/clientes/` + pedido.cliente_id, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -422,14 +422,14 @@ function wirePainelEdicao(card, pedido) {
 
     const itensExistentes = itensPorPedido[pedido.id] || [];
     for (const item of itensExistentes) {
-      await fetch('http://localhost:3000/itens-pedido/' + item.id, {
+      await fetch(`${API_URL}/itens-pedido/` + item.id, {
         method: 'DELETE',
         headers: { 'Authorization': 'Bearer ' + token }
       });
     }
 
     for (const item of edicaoAtual.itens) {
-      await fetch('http://localhost:3000/itens-pedido', {
+      await fetch(`${API_URL}/itens-pedido`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -499,7 +499,7 @@ document.addEventListener('keydown', (e) => {
 
 Promise.all([carregarClientesMap(), carregarProdutosMap(), carregarItensPorPedido()]).then(carregarPedidos);
 
-const socket = io('http://localhost:3000');
+const socket = io(`${API_URL}`);
 socket.on('novo-pedido', async (pedido) => {
   await Promise.all([carregarClientesMap(), carregarProdutosMap(), carregarItensPorPedido()]);
   todosPedidos.push(pedido);

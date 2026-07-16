@@ -1,4 +1,4 @@
-const CACHE_NOME = 'nexogest-v5';
+const CACHE_NOME = 'nexogest-v6';
 const ARQUIVOS_ESTATICOS = [
   'login.html',
   'venda.html',
@@ -11,6 +11,7 @@ const ARQUIVOS_ESTATICOS = [
   'custo.html',
   'configuracoes.html',
   'css/style.css',
+  'js/config.js',
   'js/menu.js',
   'js/login.js',
   'js/venda.js',

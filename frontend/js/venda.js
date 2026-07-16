@@ -4,7 +4,7 @@ let clientesDisponiveis = [];
 let pedidoAtual = [];
 let canalSelecionado = 'delivery';
 
-fetch('http://localhost:3000/produtos', {
+fetch(`${API_URL}/produtos`, {
   headers: { 'Authorization': 'Bearer ' + token }
 })
   .then(resposta => resposta.json())
@@ -20,7 +20,7 @@ fetch('http://localhost:3000/produtos', {
     atualizarModoQuantidade();
   });
 
-fetch('http://localhost:3000/clientes', {
+fetch(`${API_URL}/clientes`, {
   headers: { 'Authorization': 'Bearer ' + token }
 })
   .then(resposta => resposta.json())
@@ -249,7 +249,7 @@ document.getElementById('valorRecebido').addEventListener('input', atualizarTroc
 document.getElementById('totalEditavel').addEventListener('input', atualizarTroco);
 
 async function buscarOuCriarCliente(nome, telefone, endereco) {
-  const resposta = await fetch('http://localhost:3000/clientes', {
+  const resposta = await fetch(`${API_URL}/clientes`, {
     headers: { 'Authorization': 'Bearer ' + token }
   });
   const clientes = await resposta.json();
@@ -260,7 +260,7 @@ async function buscarOuCriarCliente(nome, telefone, endereco) {
     return clienteExistente.id;
   }
 
-  const respostaNovoCliente = await fetch('http://localhost:3000/clientes', {
+  const respostaNovoCliente = await fetch(`${API_URL}/clientes`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -289,7 +289,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   const observacoes = document.getElementById('observacoesPedido').value;
   const clienteId = await buscarOuCriarCliente(nome, telefone, endereco);
 
-  const respostaPedido = await fetch('http://localhost:3000/pedidos', {
+  const respostaPedido = await fetch(`${API_URL}/pedidos`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -310,7 +310,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   const pedidoCriado = await respostaPedido.json();
 
   for (const item of pedidoAtual) {
-    await fetch('http://localhost:3000/itens-pedido', {
+    await fetch(`${API_URL}/itens-pedido`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -336,7 +336,7 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   document.getElementById('formaPagamento').value = 'dinheiro';
   atualizarListaItens();
 
-  fetch('http://localhost:3000/clientes', { headers: { 'Authorization': 'Bearer ' + token } })
+  fetch(`${API_URL}/clientes`, { headers: { 'Authorization': 'Bearer ' + token } })
     .then(resposta => resposta.json())
     .then(clientes => { clientesDisponiveis = clientes; });
 });
