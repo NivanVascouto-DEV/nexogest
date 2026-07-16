@@ -1,12 +1,13 @@
 const ICONE_OBSERVACAO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l5 5v13H6z"/><path d="M15 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>';
 
 const token = localStorage.getItem('token');
+const papel = localStorage.getItem('papel');
 let todosPedidos = [];
 let clientesMap = {};
 let produtosMap = {};
 let produtosLista = [];
 let itensPorPedido = {};
-let abaAtual = 'pendente';
+let abaAtual = papel === 'entregador' ? 'saiu_para_entrega' : 'pendente';
 let edicaoAtual = null;
 let pedidoHoverId = null;
 let pedidoFocoClicado = null;
@@ -140,10 +141,11 @@ function renderizarPedidos() {
       </div>` : ''}
       <div class="pedido-item-acoes">
         <button data-id="${pedido.id}" class="botao-acao btn-avancar">Avançar</button>
+        ${papel === 'entregador' ? '' : `
         <button data-id="${pedido.id}" class="botao-acao btn-editar">Editar</button>
         <button data-id="${pedido.id}" class="botao-acao btn-imprimir-cozinha">Imprimir cozinha</button>
         <button data-id="${pedido.id}" class="botao-acao btn-imprimir-cliente">Imprimir cliente</button>
-        <button data-id="${pedido.id}" class="botao-acao btn-cancelar">Cancelar</button>
+        <button data-id="${pedido.id}" class="botao-acao btn-cancelar">Cancelar</button>`}
       </div>
       <div class="pedido-edicao" style="display:none"></div>
     `;
@@ -458,6 +460,15 @@ document.querySelectorAll('.aba-btn').forEach(btn => {
   });
 });
 
+if (papel === 'entregador') {
+  ['pendente', 'preparando'].forEach(status => {
+    const aba = document.querySelector(`.aba-btn[data-status="${status}"]`);
+    if (aba) aba.style.display = 'none';
+  });
+
+  document.querySelectorAll('.atalho-restrito').forEach(el => { el.style.display = 'none'; });
+}
+
 document.addEventListener('keydown', (e) => {
   const alvo = document.activeElement;
   const editando = alvo && ['INPUT', 'TEXTAREA', 'SELECT'].includes(alvo.tagName);
@@ -470,7 +481,12 @@ document.addEventListener('keydown', (e) => {
 
   if (tecla === 'a') {
     mudarStatus(id);
-  } else if (tecla === 'c') {
+    return;
+  }
+
+  if (papel === 'entregador') return;
+
+  if (tecla === 'c') {
     const btn = document.querySelector(`.btn-imprimir-cozinha[data-id="${id}"]`);
     if (btn) imprimir(id, 'estabelecimento', btn);
   } else if (tecla === 'l') {
@@ -487,5 +503,26 @@ const socket = io('http://localhost:3000');
 socket.on('novo-pedido', async (pedido) => {
   await Promise.all([carregarClientesMap(), carregarProdutosMap(), carregarItensPorPedido()]);
   todosPedidos.push(pedido);
+  renderizarPedidos();
+  tocarSomNotificacao();
+});
+
+socket.on('pedido-atualizado', (pedidoAtualizado) => {
+  const existente = todosPedidos.find(p => p.id === pedidoAtualizado.id);
+  const statusAnterior = existente ? existente.status : null;
+
+  if (existente) {
+    Object.assign(existente, pedidoAtualizado);
+  } else {
+    todosPedidos.push(pedidoAtualizado);
+  }
+
+  const mudouParaStatusSonoro = statusAnterior !== pedidoAtualizado.status
+    && (pedidoAtualizado.status === 'saiu_para_entrega' || pedidoAtualizado.status === 'entregue');
+
+  if (mudouParaStatusSonoro) {
+    tocarSomNotificacao();
+  }
+
   renderizarPedidos();
 });

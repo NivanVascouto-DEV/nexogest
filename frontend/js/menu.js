@@ -129,6 +129,48 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+let __audioCtx = null;
+
+function obterAudioContext() {
+  if (!__audioCtx) {
+    const AudioContextClasse = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClasse) return null;
+    __audioCtx = new AudioContextClasse();
+  }
+  return __audioCtx;
+}
+
+// Navegadores suspendem o AudioContext ate a primeira interacao do usuario
+// (politica de autoplay). Destrava assim que o usuario tocar/clicar na tela.
+['click', 'keydown', 'touchstart'].forEach((evento) => {
+  document.addEventListener(evento, () => {
+    const ctx = obterAudioContext();
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+  }, { once: true });
+});
+
+function tocarSomNotificacao() {
+  const somAtivo = localStorage.getItem('config_som') !== 'false';
+  if (!somAtivo) return;
+
+  const ctx = obterAudioContext();
+  if (!ctx) return;
+
+  const volume = (parseInt(localStorage.getItem('config_volume'), 10) || 70) / 100;
+
+  const osc = ctx.createOscillator();
+  const ganho = ctx.createGain();
+  osc.type = 'sine';
+  osc.frequency.value = 880;
+  ganho.gain.value = volume * 0.3;
+
+  osc.connect(ganho);
+  ganho.connect(ctx.destination);
+
+  osc.start();
+  osc.stop(ctx.currentTime + 0.15);
+}
+
 function mostrarToast(mensagem) {
   const toast = document.createElement('div');
   toast.className = 'toast';

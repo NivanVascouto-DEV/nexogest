@@ -42,6 +42,7 @@ router.put('/:id', async (req, res) => {
             'UPDATE pedidos SET cliente_id = $1, usuario_id = $2, canal_venda = $3, status = $4, forma_pagamento = $5, total = $6, observacoes = $7, valor_recebido = $8 WHERE id = $9 RETURNING *',
             [cliente_id, usuario_id, canal_venda, status, forma_pagamento, total, observacoes, valor_recebido, id]
         );
+        req.app.get('io').emit('pedido-atualizado', resultado.rows[0]);
         res.json(resultado.rows[0]);
     } catch (erro) {
         console.error(erro);
