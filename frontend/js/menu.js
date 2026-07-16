@@ -92,11 +92,38 @@ function criarMenu() {
   });
   sidebar.appendChild(btnSair);
 
+  const overlayMenu = document.createElement('div');
+  overlayMenu.className = 'overlay-menu';
+
+  const topbarMobile = document.createElement('div');
+  topbarMobile.className = 'topbar-mobile';
+  topbarMobile.innerHTML = `
+    <button type="button" class="btn-menu-mobile" aria-label="Abrir menu">☰</button>
+    <div class="topbar-mobile-logo">
+      <div class="logo-quadrado logo-quadrado-mini">${LOGO_SVG}</div>
+      <span>NexoGest</span>
+    </div>
+  `;
+
+  function fecharMenuMobile() {
+    sidebar.classList.remove('sidebar-aberta');
+    overlayMenu.classList.remove('overlay-visivel');
+  }
+
+  topbarMobile.querySelector('.btn-menu-mobile').addEventListener('click', () => {
+    sidebar.classList.toggle('sidebar-aberta');
+    overlayMenu.classList.toggle('overlay-visivel');
+  });
+
+  overlayMenu.addEventListener('click', fecharMenuMobile);
+
   const appShell = document.createElement('div');
   appShell.className = 'app-shell';
   appShell.appendChild(sidebar);
   appShell.appendChild(pageContent);
 
+  document.body.appendChild(topbarMobile);
+  document.body.appendChild(overlayMenu);
   document.body.appendChild(appShell);
 }
 
