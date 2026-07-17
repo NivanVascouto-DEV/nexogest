@@ -83,12 +83,11 @@ npm install
 npm run build
 ```
 
-Isso gera `dist/agente-impressao.exe` (arquivo grande, ~60MB, porque leva o
-Node.js embutido — por isso ele **não é commitado no repositório**, só o
-script de build). Depois de gerado, para distribuir numa máquina nova, copie
-para lá:
+Isso gera `dist/NexoGest.exe` (arquivo grande, ~60MB, porque leva o Node.js
+embutido — por isso ele **não é commitado no repositório**, só o script de
+build). Depois de gerado, para distribuir numa máquina nova, copie para lá:
 
-- `dist/agente-impressao.exe`
+- `dist/NexoGest.exe`
 - `.env.example` (a pessoa renomeia para `.env` e preenche a impressora)
 
 O arquivo `LEIA-ME.txt` (na raiz desta pasta) tem instruções em português,
@@ -98,6 +97,33 @@ copiado junto com o `.exe`.
 O `.env` é lido **de dentro da pasta onde o `.exe` está**, não de dentro do
 pacote — ou seja, cada computador pode ter sua própria impressora configurada
 sem precisar gerar um `.exe` diferente para cada um.
+
+Para abrir o navegador automaticamente ao iniciar, o agente usa o pacote
+[`open`](https://www.npmjs.com/package/open) em vez de chamar `start` do
+Windows diretamente via `child_process.exec` — testamos e confirmamos que,
+dentro de um `.exe` empacotado pelo pkg, `exec('start "" "URL"')` pode
+reportar sucesso sem realmente abrir nada visível; `open` usa outro
+mecanismo (PowerShell `Start-Process`) que funciona corretamente também no
+binário compilado. Se por algum motivo o navegador não abrir sozinho numa
+máquina específica, o agente imprime no console a URL para abrir manualmente.
+
+### Sobre o ícone do executável
+
+Existe um ícone personalizado pronto em `icone/icone.ico` (gerado a partir de
+`icone/logo.svg`, a mesma logo usada na barra lateral do sistema — rode
+`node icone/gerar-icone.js` para regenerar o `.ico` se o design mudar).
+
+Ainda **não conseguimos embuti-lo no `.exe`** de forma confiável: tanto
+`rcedit` quanto `resedit` (nas duas ordens possíveis — antes ou depois do
+`pkg` empacotar) acabam corrompendo ou deslocando o payload que o pkg anexa
+ao binário base do Node, porque o pkg localiza esse payload por uma posição
+absoluta gravada dentro do próprio binário, e qualquer reescrita da seção de
+recursos do Windows desloca essa posição. O `.exe` gerado hoje funciona
+perfeitamente, só usa o ícone padrão do Node/pkg em vez do ícone da
+NexoGest. Se alguém quiser retomar isso, o caminho mais promissor não
+tentado ainda é usar o recurso `--sea` (Single Executable Application) do
+próprio Node.js junto com a ferramenta oficial `postject`, que foi desenhada
+especificamente para esse tipo de injeção sem quebrar o binário.
 
 ## Iniciar automaticamente com o Windows (opcional)
 

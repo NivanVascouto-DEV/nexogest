@@ -6,7 +6,7 @@
   "bin": "index.js",
   "scripts": {
     "start": "node index.js",
-    "build": "pkg . --targets node22-win-x64 --output dist/agente-impressao.exe"
+    "build": "node build.js"
   },
   "keywords": [],
   "author": "",
@@ -21,9 +21,12 @@
   "dependencies": {
     "dotenv": "^17.4.2",
     "node-thermal-printer": "^4.6.0",
+    "open": "^8.4.2",
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
-    "@yao-pkg/pkg": "^6.21.0"
+    "@yao-pkg/pkg": "^6.21.0",
+    "png-to-ico": "^3.0.2",
+    "sharp": "^0.35.3"
   }
 }

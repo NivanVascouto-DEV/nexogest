@@ -22,7 +22,7 @@ COMO INSTALAR (fazer isso só uma vez)
 
 2. Copie estes 2 arquivos para dentro dessa pasta:
 
-       agente-impressao.exe
+       NexoGest.exe
        .env.example
 
 3. Renomeie o arquivo ".env.example" para ".env"
@@ -47,7 +47,7 @@ COMO USAR NO DIA A DIA
 
 Sempre que for começar a usar o sistema, dê um duplo clique em:
 
-       agente-impressao.exe
+       NexoGest.exe
 
 Uma janela preta (terminal) vai abrir e ficar rodando - isso é
 normal, é o programa funcionando. Não feche essa janela enquanto
@@ -66,7 +66,7 @@ Forma mais simples, sem instalar nada extra:
 1. Aperte as teclas Windows + R ao mesmo tempo.
 2. Digite: shell:startup
    e aperte Enter. Vai abrir uma pasta.
-3. Copie (ou crie um atalho de) "agente-impressao.exe" para
+3. Copie (ou crie um atalho de) "NexoGest.exe" para
    dentro dessa pasta.
 
 Pronto! A partir de agora, toda vez que o computador for ligado,

@@ -1,5 +1,5 @@
 const path = require('path');
-const { exec } = require('child_process');
+const open = require('open');
 
 // Quando empacotado com pkg, process.pkg existe e process.execPath aponta para
 // o proprio .exe — usamos a pasta dele para achar o .env que fica ao LADO do
@@ -21,18 +21,23 @@ if (!BACKEND_URL) {
   process.exit(1);
 }
 
-function abrirNavegador(url) {
-  const comando = process.platform === 'win32'
-    ? `start "" "${url}"`
-    : process.platform === 'darwin'
-      ? `open "${url}"`
-      : `xdg-open "${url}"`;
-
-  exec(comando, (erro) => {
-    if (erro) {
-      console.error('[agente-impressao] Não foi possível abrir o navegador automaticamente:', erro.message);
-    }
-  });
+// child_process.exec('start "" "URL"') e o jeito classico de abrir uma URL no
+// Windows, mas dentro de um .exe empacotado com pkg ele pode reportar sucesso
+// sem realmente abrir nada visivel (o cmd.exe /c "start ..." e disparado, mas
+// nao necessariamente resulta numa janela de navegador na tela). A biblioteca
+// "open" evita esse problema no Windows: em vez de shell string + cmd.exe, ela
+// chama powershell.exe com -EncodedCommand executando Start-Process, um
+// caminho totalmente diferente que testamos e confirmamos funcionar tanto via
+// "node index.js" quanto no .exe compilado pelo pkg.
+async function abrirNavegador(url) {
+  try {
+    await open(url);
+    console.log(`[agente-impressao] Navegador aberto em ${url}`);
+  } catch (erro) {
+    console.error('[agente-impressao] Não foi possível abrir o navegador automaticamente. Erro completo:');
+    console.error(erro);
+    console.error(`[agente-impressao] Acesse manualmente: ${url}`);
+  }
 }
 
 // io-client reconecta automaticamente por padrao; deixamos as opcoes explicitas
