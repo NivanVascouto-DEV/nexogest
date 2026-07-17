@@ -1,0 +1,88 @@
+===========================================================
+ NexoGest - Agente de Impressão
+===========================================================
+
+O que é isso?
+-------------
+Este programa fica rodando no computador que tem a impressora
+térmica ligada. Ele é responsável por imprimir os pedidos
+automaticamente sempre que alguém clicar em "Imprimir cozinha"
+ou "Imprimir cliente" no sistema NexoGest.
+
+Ele também abre o sistema (NexoGest) no navegador sozinho assim
+que é iniciado.
+
+
+COMO INSTALAR (fazer isso só uma vez)
+--------------------------------------
+
+1. Crie uma pasta neste computador, por exemplo:
+
+       C:\NexoGest
+
+2. Copie estes 2 arquivos para dentro dessa pasta:
+
+       agente-impressao.exe
+       .env.example
+
+3. Renomeie o arquivo ".env.example" para ".env"
+   (no Windows: clique com o botão direito no arquivo > Renomear)
+
+4. Abra o arquivo ".env" com o Bloco de Notas (botão direito >
+   Abrir com > Bloco de Notas) e preencha o nome EXATO da
+   impressora deste computador, exatamente como aparece em
+   "Impressoras e Scanners" do Windows. Por exemplo:
+
+       PRINTER_INTERFACE=printer:IMPRESSORA DE NF-e
+
+   Se não souber o nome exato, procure em:
+   Configurações do Windows > Bluetooth e dispositivos >
+   Impressoras e scanners.
+
+5. Salve e feche o arquivo ".env".
+
+
+COMO USAR NO DIA A DIA
+------------------------
+
+Sempre que for começar a usar o sistema, dê um duplo clique em:
+
+       agente-impressao.exe
+
+Uma janela preta (terminal) vai abrir e ficar rodando - isso é
+normal, é o programa funcionando. Não feche essa janela enquanto
+estiver usando o sistema. O navegador abre sozinho na tela de
+login do NexoGest.
+
+Se a internet cair, o programa reconecta sozinho assim que ela
+voltar - não precisa fazer nada.
+
+
+COMO FAZER O PROGRAMA ABRIR SOZINHO QUANDO O COMPUTADOR LIGAR
+----------------------------------------------------------------
+
+Forma mais simples, sem instalar nada extra:
+
+1. Aperte as teclas Windows + R ao mesmo tempo.
+2. Digite: shell:startup
+   e aperte Enter. Vai abrir uma pasta.
+3. Copie (ou crie um atalho de) "agente-impressao.exe" para
+   dentro dessa pasta.
+
+Pronto! A partir de agora, toda vez que o computador for ligado,
+o agente de impressão abre sozinho.
+
+
+DÚVIDAS COMUNS
+----------------
+
+"Não imprimiu nada" -> confira se a janela preta do programa
+está aberta. Se não estiver, dê duplo clique no .exe novamente.
+
+"Apareceu 'Nenhum agente de impressão conectado' no sistema" ->
+é sinal de que este programa não está rodando neste computador,
+ou não conseguiu se conectar à internet. Abra o .exe novamente e
+veja se a janela preta mostra alguma mensagem de erro.
+
+"Preciso trocar de impressora" -> edite o arquivo ".env" com o
+nome novo da impressora e feche/abra o programa de novo.

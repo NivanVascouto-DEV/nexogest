@@ -65,9 +65,39 @@ Se tudo estiver certo, o terminal mostra:
 [agente-impressao] Conectado ao backend em https://seu-backend.onrender.com
 ```
 
+O agente também abre automaticamente o navegador padrão na tela de login do
+NexoGest assim que inicia.
+
 Deixe essa janela aberta (minimizada) enquanto a loja estiver funcionando. Se
 a internet cair, o agente reconecta sozinho assim que a conexão voltar — não
 precisa reiniciar nada manualmente.
+
+## Gerando o executável (.exe)
+
+Para distribuir este agente para computadores que não têm Node.js instalado,
+é possível empacotar tudo (incluindo o próprio Node.js) num único `.exe`
+standalone, usando o [`pkg`](https://github.com/yao-pkg/pkg):
+
+```
+npm install
+npm run build
+```
+
+Isso gera `dist/agente-impressao.exe` (arquivo grande, ~60MB, porque leva o
+Node.js embutido — por isso ele **não é commitado no repositório**, só o
+script de build). Depois de gerado, para distribuir numa máquina nova, copie
+para lá:
+
+- `dist/agente-impressao.exe`
+- `.env.example` (a pessoa renomeia para `.env` e preenche a impressora)
+
+O arquivo `LEIA-ME.txt` (na raiz desta pasta) tem instruções em português,
+para quem for instalar sem precisar entender nada de programação — pode ser
+copiado junto com o `.exe`.
+
+O `.env` é lido **de dentro da pasta onde o `.exe` está**, não de dentro do
+pacote — ou seja, cada computador pode ter sua própria impressora configurada
+sem precisar gerar um `.exe` diferente para cada um.
 
 ## Iniciar automaticamente com o Windows (opcional)
 

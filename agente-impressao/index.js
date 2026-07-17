@@ -1,12 +1,38 @@
-require('dotenv').config();
+const path = require('path');
+const { exec } = require('child_process');
+
+// Quando empacotado com pkg, process.pkg existe e process.execPath aponta para
+// o proprio .exe — usamos a pasta dele para achar o .env que fica ao LADO do
+// executavel (nao embutido no pacote), para que cada computador configure sua
+// propria impressora sem precisar recompilar nada. Rodando via "node index.js"
+// (fora do pkg), usamos __dirname normalmente.
+const pastaBase = process.pkg ? path.dirname(process.execPath) : __dirname;
+require('dotenv').config({ path: path.join(pastaBase, '.env') });
+
 const { io } = require('socket.io-client');
 const { criarImpressora, montarCupomEstabelecimento, montarCupomCliente, enviarParaImpressora } = require('./src/impressao');
 
 const BACKEND_URL = process.env.BACKEND_URL;
+const URL_LOGIN = 'https://nexogest.netlify.app/login.html';
 
 if (!BACKEND_URL) {
-  console.error('Defina BACKEND_URL no .env deste agente (ex: BACKEND_URL=https://seu-backend.onrender.com).');
+  console.error(`Defina BACKEND_URL no .env ao lado deste programa (${path.join(pastaBase, '.env')}).`);
+  console.error('Exemplo: BACKEND_URL=https://seu-backend.onrender.com');
   process.exit(1);
+}
+
+function abrirNavegador(url) {
+  const comando = process.platform === 'win32'
+    ? `start "" "${url}"`
+    : process.platform === 'darwin'
+      ? `open "${url}"`
+      : `xdg-open "${url}"`;
+
+  exec(comando, (erro) => {
+    if (erro) {
+      console.error('[agente-impressao] Não foi possível abrir o navegador automaticamente:', erro.message);
+    }
+  });
 }
 
 // io-client reconecta automaticamente por padrao; deixamos as opcoes explicitas
@@ -58,3 +84,4 @@ socket.on('imprimir-pedido', async ({ tipo, largura, dados }) => {
 });
 
 console.log('[agente-impressao] Iniciando... aguardando conexão com o backend.');
+abrirNavegador(URL_LOGIN);
