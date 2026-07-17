@@ -92,3 +92,8 @@ ALTER TABLE clientes ADD COLUMN IF NOT EXISTS ativo BOOLEAN DEFAULT true;
 -- Valor recebido em dinheiro no momento da venda, usado para calcular o
 -- troco exibido na via de impressao do cliente.
 ALTER TABLE pedidos ADD COLUMN IF NOT EXISTS valor_recebido NUMERIC(10,2);
+
+-- Status de pagamento de cada lancamento financeiro (despesas "pendente" ate
+-- serem pagas). O saldo de caixa por forma de pagamento (GET /relatorios/
+-- pagamentos) so desconta saidas com status 'paga'.
+ALTER TABLE lancamentos_financeiros ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pendente';

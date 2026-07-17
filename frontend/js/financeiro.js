@@ -62,26 +62,37 @@ function renderizarDespesas(despesas) {
   corpo.innerHTML = '';
 
   if (despesas.length === 0) {
-    corpo.innerHTML = '<tr><td colspan="5">Nenhuma despesa lançada.</td></tr>';
+    corpo.innerHTML = '<tr><td colspan="6">Nenhuma despesa lançada.</td></tr>';
     return;
   }
 
   despesas.forEach(d => {
     const dias = diasAteVencimento(d.data_vencimento);
     const proximoVencimento = dias !== null && dias <= 7;
+    const paga = d.status === 'paga';
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${d.descricao}</td>
       <td>${d.categoria}</td>
       <td>${formatarData(d.data_vencimento)} ${proximoVencimento ? '<span class="badge badge-perigo">Vence em breve</span>' : ''}</td>
       <td>R$ ${d.valor}</td>
-      <td><button data-id="${d.id}" class="btn-excluir-despesa btn-excluir-linha">Excluir</button></td>
+      <td><span class="badge ${paga ? 'badge-ok' : 'badge-alerta'}">${paga ? 'Paga' : 'Pendente'}</span></td>
+      <td>
+        <div class="acoes-linha">
+          <button data-id="${d.id}" class="btn-alternar-status-despesa btn-editar-linha">${paga ? 'Marcar como pendente' : 'Marcar como paga'}</button>
+          <button data-id="${d.id}" class="btn-excluir-despesa btn-excluir-linha">Excluir</button>
+        </div>
+      </td>
     `;
     corpo.appendChild(tr);
   });
 
   document.querySelectorAll('.btn-excluir-despesa').forEach(btn => {
     btn.addEventListener('click', () => excluirDespesa(parseInt(btn.dataset.id)));
+  });
+
+  document.querySelectorAll('.btn-alternar-status-despesa').forEach(btn => {
+    btn.addEventListener('click', () => alternarStatusDespesa(parseInt(btn.dataset.id)));
   });
 }
 
@@ -96,18 +107,49 @@ async function excluirDespesa(id) {
   carregarPagamentos();
 }
 
-function carregarDespesas() {
-  fetch(`${API_URL}/lancamentos-financeiros`, {
-    headers: { 'Authorization': 'Bearer ' + token }
-  })
-    .then(resposta => resposta.json())
-    .then(lancamentos => {
-      todasDespesas = lancamentos.filter(l => l.tipo === 'saida');
-      renderizarDespesas(todasDespesas);
-    });
+async function alternarStatusDespesa(id) {
+  const despesa = todasDespesas.find(d => d.id === id);
+  if (!despesa) return;
+
+  const novoStatus = despesa.status === 'paga' ? 'pendente' : 'paga';
+
+  await fetch(`${API_URL}/lancamentos-financeiros/` + id, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token
+    },
+    body: JSON.stringify({
+      tipo: despesa.tipo,
+      categoria: despesa.categoria,
+      descricao: despesa.descricao,
+      valor: despesa.valor,
+      forma_pagamento: despesa.forma_pagamento,
+      status: novoStatus
+    })
+  });
+
+  mostrarToast(novoStatus === 'paga' ? 'Despesa marcada como paga!' : 'Despesa marcada como pendente.');
+  carregarDespesas();
+  carregarPagamentos();
 }
 
-document.getElementById('btnFiltrarFin').addEventListener('click', () => {
+function paraDataInput(data) {
+  const ano = data.getFullYear();
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const dia = String(data.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
+function definirPeriodoPadraoMesAtual() {
+  const hoje = new Date();
+  const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  const ultimoDia = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+  document.getElementById('dataInicioFin').value = paraDataInput(primeiroDia);
+  document.getElementById('dataFimFin').value = paraDataInput(ultimoDia);
+}
+
+function aplicarFiltroDatas() {
   const inicio = document.getElementById('dataInicioFin').value;
   const fim = document.getElementById('dataFimFin').value;
 
@@ -123,7 +165,20 @@ document.getElementById('btnFiltrarFin').addEventListener('click', () => {
   });
 
   renderizarDespesas(filtradas);
-});
+}
+
+function carregarDespesas() {
+  fetch(`${API_URL}/lancamentos-financeiros`, {
+    headers: { 'Authorization': 'Bearer ' + token }
+  })
+    .then(resposta => resposta.json())
+    .then(lancamentos => {
+      todasDespesas = lancamentos.filter(l => l.tipo === 'saida');
+      aplicarFiltroDatas();
+    });
+}
+
+document.getElementById('btnFiltrarFin').addEventListener('click', aplicarFiltroDatas);
 
 document.getElementById('btnSalvarDespesa').addEventListener('click', async () => {
   const descricao = document.getElementById('descricaoDespesa').value;
@@ -151,6 +206,7 @@ document.getElementById('btnSalvarDespesa').addEventListener('click', async () =
   carregarPagamentos();
 });
 
+definirPeriodoPadraoMesAtual();
 carregarDRE();
 carregarPagamentos();
 carregarDespesas();

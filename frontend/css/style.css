@@ -420,6 +420,7 @@ table.tabela {
 .badge-ok { background-color: var(--cor-sucesso-fundo); color: var(--cor-sucesso); }
 .badge-perigo { background-color: var(--cor-perigo-fundo); color: var(--cor-perigo); }
 .badge-info { background-color: var(--cor-info-fundo); color: var(--cor-info); }
+.badge-alerta { background-color: var(--cor-alerta-fundo); color: var(--cor-alerta); }
 
 /* Cards de estatistica (Pedidos) */
 

@@ -36,15 +36,15 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { tipo, categoria, descricao, valor, forma_pagamento } = req.body;
+        const { tipo, categoria, descricao, valor, forma_pagamento, status } = req.body;
 
         if (!CATEGORIAS_VALIDAS.includes(categoria)) {
             return res.status(400).json({ mensagem: 'Categoria inválida' });
         }
 
         const resultado = await pool.query(
-            'UPDATE lancamentos_financeiros SET tipo = $1, categoria = $2, descricao = $3, valor = $4, forma_pagamento = $5 WHERE id = $6 RETURNING *',
-            [tipo, categoria, descricao, valor, forma_pagamento, id]
+            'UPDATE lancamentos_financeiros SET tipo = $1, categoria = $2, descricao = $3, valor = $4, forma_pagamento = $5, status = $6 WHERE id = $7 RETURNING *',
+            [tipo, categoria, descricao, valor, forma_pagamento, status, id]
         );
         res.json(resultado.rows[0]);
     } catch (erro) {

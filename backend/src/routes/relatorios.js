@@ -40,7 +40,7 @@ router.get('/pagamentos', async (req, res) => {
             'SELECT forma_pagamento, SUM(total) AS total FROM pedidos GROUP BY forma_pagamento'
         );
         const saidasResultado = await pool.query(
-            "SELECT forma_pagamento, SUM(valor) AS total FROM lancamentos_financeiros WHERE tipo = 'saida' GROUP BY forma_pagamento"
+            "SELECT forma_pagamento, SUM(valor) AS total FROM lancamentos_financeiros WHERE tipo = 'saida' AND status = 'paga' GROUP BY forma_pagamento"
         );
 
         const saldos = { dinheiro: 0, pix: 0, cartao: 0 };
