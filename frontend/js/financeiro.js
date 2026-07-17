@@ -10,6 +10,10 @@ function carregarDRE() {
       const container = document.getElementById('metricasDRE');
       container.innerHTML = `
         <div class="metrica-card">
+          <p class="metrica-label">Receita total</p>
+          <p class="metrica-valor">R$ ${dre.receita_bruta.toFixed(2)}</p>
+        </div>
+        <div class="metrica-card">
           <p class="metrica-label">Lucro bruto</p>
           <p class="metrica-valor">R$ ${dre.lucro_bruto.toFixed(2)}</p>
         </div>
@@ -26,15 +30,12 @@ function carregarPagamentos() {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
-    .then(pagamentos => {
-      const totais = { dinheiro: 0, pix: 0, cartao: 0 };
-      pagamentos.forEach(p => { totais[p.forma_pagamento] = parseFloat(p.total); });
-
+    .then(saldos => {
       const container = document.getElementById('metricasPagamento');
       container.innerHTML = `
-        <div class="metrica-card"><p class="metrica-label">Dinheiro</p><p class="metrica-valor">R$ ${totais.dinheiro.toFixed(2)}</p></div>
-        <div class="metrica-card"><p class="metrica-label">Cartão</p><p class="metrica-valor">R$ ${totais.cartao.toFixed(2)}</p></div>
-        <div class="metrica-card"><p class="metrica-label">Pix</p><p class="metrica-valor">R$ ${totais.pix.toFixed(2)}</p></div>
+        <div class="metrica-card"><p class="metrica-label">Dinheiro</p><p class="metrica-valor">R$ ${saldos.dinheiro.toFixed(2)}</p></div>
+        <div class="metrica-card"><p class="metrica-label">Cartão</p><p class="metrica-valor">R$ ${saldos.cartao.toFixed(2)}</p></div>
+        <div class="metrica-card"><p class="metrica-label">Pix</p><p class="metrica-valor">R$ ${saldos.pix.toFixed(2)}</p></div>
       `;
     });
 }
@@ -92,6 +93,7 @@ async function excluirDespesa(id) {
   });
   carregarDespesas();
   carregarDRE();
+  carregarPagamentos();
 }
 
 function carregarDespesas() {
@@ -146,6 +148,7 @@ document.getElementById('btnSalvarDespesa').addEventListener('click', async () =
   mostrarToast('Lançamento salvo com sucesso!');
   carregarDespesas();
   carregarDRE();
+  carregarPagamentos();
 });
 
 carregarDRE();

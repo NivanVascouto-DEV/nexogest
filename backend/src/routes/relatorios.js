@@ -36,10 +36,28 @@ router.get('/dre', async (req, res) => {
 
 router.get('/pagamentos', async (req, res) => {
     try {
-        const resultado = await pool.query(
+        const entradasResultado = await pool.query(
             'SELECT forma_pagamento, SUM(total) AS total FROM pedidos GROUP BY forma_pagamento'
         );
-        res.json(resultado.rows);
+        const saidasResultado = await pool.query(
+            "SELECT forma_pagamento, SUM(valor) AS total FROM lancamentos_financeiros WHERE tipo = 'saida' GROUP BY forma_pagamento"
+        );
+
+        const saldos = { dinheiro: 0, pix: 0, cartao: 0 };
+
+        entradasResultado.rows.forEach((linha) => {
+            if (Object.prototype.hasOwnProperty.call(saldos, linha.forma_pagamento)) {
+                saldos[linha.forma_pagamento] += parseFloat(linha.total) || 0;
+            }
+        });
+
+        saidasResultado.rows.forEach((linha) => {
+            if (Object.prototype.hasOwnProperty.call(saldos, linha.forma_pagamento)) {
+                saldos[linha.forma_pagamento] -= parseFloat(linha.total) || 0;
+            }
+        });
+
+        res.json(saldos);
     } catch (erro) {
         console.error(erro);
         res.status(500).json({ mensagem: 'Erro ao calcular totais por pagamento' });
