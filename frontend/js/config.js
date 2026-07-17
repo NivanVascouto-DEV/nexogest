@@ -6,4 +6,4 @@
 // Para testar localmente antes do deploy, use http://localhost:3000, ou o IP
 // da sua máquina na rede (ex: http://192.168.1.17:3000) para acessar de outro
 // dispositivo como celular.
-const API_URL = 'https://SEU-BACKEND.onrender.com';
+const API_URL = 'https://nexogest-backend.onrender.com';
