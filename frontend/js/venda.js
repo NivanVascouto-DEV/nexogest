@@ -273,12 +273,26 @@ async function buscarOuCriarCliente(nome, telefone, endereco) {
   return novoCliente.id;
 }
 
+let enviandoPedido = false;
+
 document.getElementById('btnFinalizar').addEventListener('click', async () => {
+  if (enviandoPedido) return;
+
   if (pedidoAtual.length === 0) {
     alert('Adicione ao menos um item ao pedido.');
     return;
   }
 
+  // Captura tudo em variaveis locais e limpa o carrinho/formulario JA, antes
+  // de qualquer chamada de rede. Isso evita que um clique duplo (ex: usuario
+  // impaciente enquanto o backend do Render "acorda" do modo dormindo)
+  // dispare duas execucoes deste handler que leem/zeram a MESMA variavel
+  // compartilhada (pedidoAtual) ao mesmo tempo - foi exatamente isso que
+  // causou os pedidos #23/#24 em producao terem o mesmo nome de cliente e
+  // o segundo pedido ficar com o total certo mas zero itens (a segunda
+  // chamada calculou o total a partir do carrinho cheio, mas por quando
+  // chegou no loop de itens, a primeira chamada ja tinha zerado pedidoAtual).
+  const itensParaEnviar = pedidoAtual.map(item => ({ ...item }));
   const total = totalFinal();
   const forma_pagamento = document.getElementById('formaPagamento').value;
   const valorRecebidoTexto = document.getElementById('valorRecebido').value;
@@ -287,45 +301,14 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   const telefone = document.getElementById('telefoneCliente').value;
   const endereco = document.getElementById('enderecoCliente').value;
   const observacoes = document.getElementById('observacoesPedido').value;
-  const clienteId = await buscarOuCriarCliente(nome, telefone, endereco);
+  const canal = canalSelecionado;
 
-  const respostaPedido = await fetch(`${API_URL}/pedidos`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ' + token
-    },
-    body: JSON.stringify({
-      cliente_id: clienteId,
-      usuario_id: parseInt(localStorage.getItem('id')),
-      canal_venda: canalSelecionado,
-      status: 'pendente',
-      forma_pagamento: forma_pagamento,
-      total: total,
-      observacoes: observacoes,
-      valor_recebido: valor_recebido
-    })
-  });
+  enviandoPedido = true;
+  const btnFinalizar = document.getElementById('btnFinalizar');
+  const textoOriginalBotao = btnFinalizar.textContent;
+  btnFinalizar.disabled = true;
+  btnFinalizar.textContent = 'Enviando...';
 
-  const pedidoCriado = await respostaPedido.json();
-
-  for (const item of pedidoAtual) {
-    await fetch(`${API_URL}/itens-pedido`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      },
-      body: JSON.stringify({
-        pedido_id: pedidoCriado.id,
-        produto_id: item.produto_id,
-        quantidade: item.quantidade,
-        preco_unitario: item.preco
-      })
-    });
-  }
-
-  mostrarToast('Pedido finalizado com sucesso!');
   pedidoAtual = [];
   selecionarCanal('delivery');
   document.getElementById('nomeCliente').value = '';
@@ -336,7 +319,64 @@ document.getElementById('btnFinalizar').addEventListener('click', async () => {
   document.getElementById('formaPagamento').value = 'dinheiro';
   atualizarListaItens();
 
-  fetch(`${API_URL}/clientes`, { headers: { 'Authorization': 'Bearer ' + token } })
-    .then(resposta => resposta.json())
-    .then(clientes => { clientesDisponiveis = clientes; });
+  try {
+    const clienteId = await buscarOuCriarCliente(nome, telefone, endereco);
+
+    const respostaPedido = await fetch(`${API_URL}/pedidos`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + token
+      },
+      body: JSON.stringify({
+        cliente_id: clienteId,
+        usuario_id: parseInt(localStorage.getItem('id')),
+        canal_venda: canal,
+        status: 'pendente',
+        forma_pagamento: forma_pagamento,
+        total: total,
+        observacoes: observacoes,
+        valor_recebido: valor_recebido
+      })
+    });
+
+    if (!respostaPedido.ok) {
+      throw new Error(`O servidor recusou o pedido (HTTP ${respostaPedido.status}).`);
+    }
+
+    const pedidoCriado = await respostaPedido.json();
+
+    for (const item of itensParaEnviar) {
+      const respostaItem = await fetch(`${API_URL}/itens-pedido`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          pedido_id: pedidoCriado.id,
+          produto_id: item.produto_id,
+          quantidade: item.quantidade,
+          preco_unitario: item.preco
+        })
+      });
+
+      if (!respostaItem.ok) {
+        throw new Error(`O pedido #${pedidoCriado.id} foi criado, mas falhou ao registrar o item "${item.nome}" (HTTP ${respostaItem.status}). Verifique o pedido em Pedidos/Histórico.`);
+      }
+    }
+
+    mostrarToast('Pedido finalizado com sucesso!');
+
+    fetch(`${API_URL}/clientes`, { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(resposta => resposta.json())
+      .then(clientes => { clientesDisponiveis = clientes; });
+  } catch (erro) {
+    console.error(erro);
+    alert('Não foi possível finalizar o pedido corretamente: ' + erro.message);
+  } finally {
+    enviandoPedido = false;
+    btnFinalizar.disabled = false;
+    btnFinalizar.textContent = textoOriginalBotao;
+  }
 });
