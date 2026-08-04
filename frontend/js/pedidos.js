@@ -204,8 +204,15 @@ async function imprimir(pedidoId, tipo, btn) {
   }
 }
 
+async function verificarResposta(resposta, mensagemErro) {
+  if (!resposta.ok) {
+    throw new Error(mensagemErro + ` (HTTP ${resposta.status}).`);
+  }
+  return resposta;
+}
+
 async function salvarPedido(pedido, campos) {
-  await fetch(`${API_URL}/pedidos/` + pedido.id, {
+  const resposta = await fetch(`${API_URL}/pedidos/` + pedido.id, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -222,6 +229,7 @@ async function salvarPedido(pedido, campos) {
       ...campos
     })
   });
+  await verificarResposta(resposta, `Não foi possível salvar o pedido #${pedido.id}`);
 }
 
 async function mudarStatus(id) {
@@ -396,7 +404,11 @@ function wirePainelEdicao(card, pedido) {
   });
 
   painel.querySelector('.edit-btn-salvar').addEventListener('click', async () => {
+    if (edicaoAtual.salvando) return;
+    edicaoAtual.salvando = true;
+
     const btnSalvar = painel.querySelector('.edit-btn-salvar');
+    const textoOriginalBotao = btnSalvar.textContent;
     btnSalvar.disabled = true;
     btnSalvar.textContent = 'Salvando...';
 
@@ -406,47 +418,81 @@ function wirePainelEdicao(card, pedido) {
     const forma_pagamento = painel.querySelector('.edit-forma-pagamento').value;
     const observacoes = painel.querySelector('.edit-observacoes').value;
     const total = parseFloat(painel.querySelector('.edit-total').value) || 0;
+    const itensParaSalvar = edicaoAtual.itens.map(item => ({ ...item }));
 
-    if (pedido.cliente_id) {
-      await fetch(`${API_URL}/clientes/` + pedido.cliente_id, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({ nome, telefone, endereco })
+    try {
+      // Cliente, pedido e criacao dos itens novos sao independentes entre si no
+      // backend (linhas separadas, sem constraint que exija ordem), entao sao
+      // disparados em paralelo com Promise.all em vez de um await sequencial por
+      // item - com N itens, o codigo antigo fazia 2N requisicoes uma atras da
+      // outra (delete de cada item antigo, depois post de cada item novo), o que
+      // deixava o salvamento proporcional a quantidade de itens e ainda mais
+      // lento quando o backend do Render esta "acordando".
+      //
+      // A exclusao dos itens antigos só roda DEPOIS que os itens novos forem
+      // criados com sucesso (e não em paralelo com eles). Um teste ao vivo aqui
+      // mostrou que, se a criacao de um item novo falhar (ex: queda de rede no
+      // meio da operacao) enquanto exclusao e criacao rodam juntas, o pedido pode
+      // ficar sem NENHUM item - reproduzindo o mesmo sintoma do pedido #24
+      // ("Sem itens registrados" com total != 0). Criando antes de excluir, uma
+      // falha deixa o pedido com itens duplicados (recuperável reabrindo e
+      // salvando de novo) em vez de zerado.
+      const promessas = [];
+
+      if (pedido.cliente_id) {
+        promessas.push(
+          fetch(`${API_URL}/clientes/` + pedido.cliente_id, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ nome, telefone, endereco })
+          }).then(resposta => verificarResposta(resposta, 'Não foi possível salvar os dados do cliente'))
+        );
+      }
+
+      promessas.push(salvarPedido(pedido, { forma_pagamento, observacoes, total }));
+
+      itensParaSalvar.forEach(item => {
+        promessas.push(
+          fetch(`${API_URL}/itens-pedido`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+              pedido_id: pedido.id,
+              produto_id: item.produto_id,
+              quantidade: item.quantidade,
+              preco_unitario: item.preco
+            })
+          }).then(resposta => verificarResposta(resposta, `Não foi possível salvar o item "${item.nome}"`))
+        );
       });
+
+      await Promise.all(promessas);
+
+      const itensExistentes = itensPorPedido[pedido.id] || [];
+      await Promise.all(itensExistentes.map(item =>
+        fetch(`${API_URL}/itens-pedido/` + item.id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        }).then(resposta => verificarResposta(resposta, `Não foi possível remover o item antigo #${item.id}`))
+      ));
+
+      await Promise.all([carregarClientesMap(), carregarItensPorPedido()]);
+      mostrarToast('Pedido atualizado com sucesso!');
+      fecharPaineisEdicao();
+      carregarPedidos();
+    } catch (erro) {
+      console.error(erro);
+      alert('Não foi possível salvar as alterações do pedido: ' + erro.message + ' Verifique a conexão e tente novamente.');
+      edicaoAtual.salvando = false;
+      btnSalvar.disabled = false;
+      btnSalvar.textContent = textoOriginalBotao;
     }
-
-    await salvarPedido(pedido, { forma_pagamento, observacoes, total });
-
-    const itensExistentes = itensPorPedido[pedido.id] || [];
-    for (const item of itensExistentes) {
-      await fetch(`${API_URL}/itens-pedido/` + item.id, {
-        method: 'DELETE',
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-    }
-
-    for (const item of edicaoAtual.itens) {
-      await fetch(`${API_URL}/itens-pedido`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({
-          pedido_id: pedido.id,
-          produto_id: item.produto_id,
-          quantidade: item.quantidade,
-          preco_unitario: item.preco
-        })
-      });
-    }
-
-    await Promise.all([carregarClientesMap(), carregarItensPorPedido()]);
-    mostrarToast('Pedido atualizado com sucesso!');
-    carregarPedidos();
   });
 }
 
