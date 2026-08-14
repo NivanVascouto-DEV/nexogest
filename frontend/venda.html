@@ -3,80 +3,87 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <title>NexoGest - Venda</title>
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=3">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#D4537E">
 </head>
 <body>
-  <div class="container-tela">
+  <div class="container-tela container-tela-venda">
     <h1>Novo pedido</h1>
 
-    <div class="secao-form">
-      <h3>👤 Cliente</h3>
-      <div class="canal-toggle">
-        <button type="button" class="botao-canal ativo" data-canal="delivery" id="btnDelivery">Delivery</button>
-        <button type="button" class="botao-canal" data-canal="retirada" id="btnRetirada">Retirada</button>
-      </div>
-      <label for="nomeCliente">Nome</label>
-      <div style="position: relative;">
-        <input type="text" id="nomeCliente" placeholder="Nome" autocomplete="off">
-        <div class="autocomplete-lista" id="listaSugestoesNome"></div>
-      </div>
-      <label for="telefoneCliente">Telefone</label>
-      <div style="position: relative;">
-        <input type="text" id="telefoneCliente" placeholder="11999999999" autocomplete="off">
-        <div class="autocomplete-lista" id="listaSugestoesTelefone"></div>
-      </div>
-      <label for="enderecoCliente">Endereço</label>
-      <input type="text" id="enderecoCliente" placeholder="Rua, número - Bairro">
-    </div>
-
-    <div class="secao-form">
-      <h3>🛒 Adicionar item</h3>
-      <div class="linha-adicionar-item">
-        <select id="selectProduto"></select>
-        <input type="number" id="quantidadeItem" value="1" min="1">
-        <div id="calculadoraKg" class="calculadora-kg" style="display:none;">
-          <input type="number" id="pesoGramas" placeholder="Peso (g)" step="1" min="0">
-          <input type="number" id="valorDesejadoKg" placeholder="Valor (R$)" step="0.01" min="0">
+    <div class="venda-grid">
+      <div class="venda-coluna-principal">
+        <div class="secao-form">
+          <h3>👤 Cliente</h3>
+          <div class="canal-toggle">
+            <button type="button" class="botao-canal ativo" data-canal="delivery" id="btnDelivery">Delivery</button>
+            <button type="button" class="botao-canal" data-canal="retirada" id="btnRetirada">Retirada</button>
+          </div>
+          <label for="nomeCliente">Nome</label>
+          <div style="position: relative;">
+            <input type="text" id="nomeCliente" placeholder="Nome" autocomplete="off">
+            <div class="autocomplete-lista" id="listaSugestoesNome"></div>
+          </div>
+          <label for="telefoneCliente">Telefone</label>
+          <div style="position: relative;">
+            <input type="text" id="telefoneCliente" placeholder="11999999999" autocomplete="off">
+            <div class="autocomplete-lista" id="listaSugestoesTelefone"></div>
+          </div>
+          <label for="enderecoCliente">Endereço</label>
+          <input type="text" id="enderecoCliente" placeholder="Rua, número - Bairro">
         </div>
-        <button type="button" id="btnAdicionarItem">+ Adicionar</button>
+
+        <div class="secao-form">
+          <h3>🛒 Adicionar item</h3>
+          <div class="linha-adicionar-item">
+            <select id="selectProduto"></select>
+            <input type="number" id="quantidadeItem" value="1" min="1">
+            <div id="calculadoraKg" class="calculadora-kg" style="display:none;">
+              <input type="number" id="pesoGramas" placeholder="Peso (g)" step="1" min="0">
+              <input type="number" id="valorDesejadoKg" placeholder="Valor (R$)" step="0.01" min="0">
+            </div>
+            <button type="button" id="btnAdicionarItem">+ Adicionar</button>
+          </div>
+        </div>
+
+        <div class="secao-form">
+          <h3>📋 Itens do pedido</h3>
+          <div id="listaItensPedido"><p class="ts-small">Nenhum item adicionado ainda.</p></div>
+        </div>
+
+        <div class="secao-form">
+          <h3>📝 Observações</h3>
+          <textarea id="observacoesPedido" placeholder="Ex: sem cebola, entregar após 19h"></textarea>
+        </div>
       </div>
+
+      <aside class="venda-resumo-lateral">
+        <div class="secao-form secao-resumo">
+          <h3>Resumo do pedido</h3>
+          <div class="resumo-caixa" id="resumoCaixa"></div>
+
+          <label for="totalEditavel">Total do pedido <span class="ts-small">(editável)</span></label>
+          <input type="number" id="totalEditavel" step="0.01" placeholder="0.00">
+
+          <label for="formaPagamento">Forma de pagamento</label>
+          <select id="formaPagamento">
+            <option value="dinheiro">Dinheiro</option>
+            <option value="pix">Pix</option>
+            <option value="cartao">Cartão</option>
+          </select>
+
+          <label for="valorRecebido">Valor recebido</label>
+          <input type="number" id="valorRecebido" placeholder="0.00" step="0.01">
+          <p class="troco-resultado" id="resultadoTroco"></p>
+
+          <button id="btnFinalizar">✓ Finalizar pedido</button>
+        </div>
+      </aside>
     </div>
-
-    <div class="secao-form">
-      <h3>📋 Itens do pedido</h3>
-      <div id="listaItensPedido"><p class="ts-small">Nenhum item adicionado ainda.</p></div>
-    </div>
-
-    <div class="secao-form">
-      <h3>💳 Pagamento</h3>
-      <label for="formaPagamento">Forma de pagamento</label>
-      <select id="formaPagamento">
-        <option value="dinheiro">Dinheiro</option>
-        <option value="pix">Pix</option>
-        <option value="cartao">Cartão</option>
-      </select>
-      <label for="totalEditavel">Total do pedido</label>
-      <input type="number" id="totalEditavel" step="0.01" placeholder="0.00">
-    </div>
-
-    <div class="secao-form">
-      <h3>📝 Observações</h3>
-      <textarea id="observacoesPedido" placeholder="Ex: sem cebola, entregar após 19h"></textarea>
-    </div>
-
-    <div class="resumo-caixa" id="resumoCaixa"></div>
-
-    <div class="secao-form">
-      <h3>💰 Troco</h3>
-      <label for="valorRecebido">Valor recebido</label>
-      <input type="number" id="valorRecebido" placeholder="0.00" step="0.01">
-      <p class="troco-resultado" id="resultadoTroco"></p>
-    </div>
-
-    <button id="btnFinalizar">✓ Finalizar pedido</button>
   </div>
 
   <script src="js/config.js"></script>

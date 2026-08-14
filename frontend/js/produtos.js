@@ -1,4 +1,58 @@
 const token = localStorage.getItem('token');
+let todosProdutos = [];
+
+function renderizarProdutos(produtos) {
+  const corpo = document.getElementById('corpoProdutos');
+  corpo.innerHTML = '';
+
+  if (produtos.length === 0) {
+    corpo.innerHTML = '<tr><td colspan="5">Nenhum produto encontrado.</td></tr>';
+    return;
+  }
+
+  produtos.forEach(produto => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${produto.codigo}</td>
+      <td>${produto.nome}</td>
+      <td>${produto.unidade_venda}</td>
+      <td>R$ ${produto.preco}</td>
+      <td>
+        <div class="acoes-linha">
+          <button data-id="${produto.id}" class="btn-editar-produto btn-editar-linha">Editar</button>
+          <button data-id="${produto.id}" class="btn-excluir-produto btn-excluir-linha">Excluir</button>
+        </div>
+      </td>
+    `;
+    corpo.appendChild(tr);
+  });
+
+  document.querySelectorAll('.btn-editar-produto').forEach(btn => {
+    const produto = produtos.find(p => p.id === parseInt(btn.dataset.id));
+    btn.addEventListener('click', () => editarProduto(produto));
+  });
+
+  document.querySelectorAll('.btn-excluir-produto').forEach(btn => {
+    btn.addEventListener('click', () => excluirProduto(parseInt(btn.dataset.id)));
+  });
+}
+
+function aplicarBuscaProduto() {
+  const termo = document.getElementById('buscaProduto').value.trim().toLowerCase();
+
+  if (!termo) {
+    renderizarProdutos(todosProdutos);
+    return;
+  }
+
+  const filtrados = todosProdutos.filter(p =>
+    (p.nome && p.nome.toLowerCase().includes(termo)) ||
+    String(p.codigo).toLowerCase().includes(termo)
+  );
+  renderizarProdutos(filtrados);
+}
+
+document.getElementById('buscaProduto').addEventListener('input', aplicarBuscaProduto);
 
 function carregarProdutos() {
   fetch(`${API_URL}/produtos`, {
@@ -6,34 +60,8 @@ function carregarProdutos() {
   })
     .then(resposta => resposta.json())
     .then(produtos => {
-      const corpo = document.getElementById('corpoProdutos');
-      corpo.innerHTML = '';
-
-      produtos.forEach(produto => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${produto.codigo}</td>
-          <td>${produto.nome}</td>
-          <td>${produto.unidade_venda}</td>
-          <td>R$ ${produto.preco}</td>
-          <td>
-            <div class="acoes-linha">
-              <button data-id="${produto.id}" class="btn-editar-produto btn-editar-linha">Editar</button>
-              <button data-id="${produto.id}" class="btn-excluir-produto btn-excluir-linha">Excluir</button>
-            </div>
-          </td>
-        `;
-        corpo.appendChild(tr);
-      });
-
-      document.querySelectorAll('.btn-editar-produto').forEach(btn => {
-        const produto = produtos.find(p => p.id === parseInt(btn.dataset.id));
-        btn.addEventListener('click', () => editarProduto(produto));
-      });
-
-      document.querySelectorAll('.btn-excluir-produto').forEach(btn => {
-        btn.addEventListener('click', () => excluirProduto(parseInt(btn.dataset.id)));
-      });
+      todosProdutos = produtos;
+      aplicarBuscaProduto();
     });
 }
 

@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <title>NexoGest - Estoque</title>
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=3">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#D4537E">
 </head>
@@ -12,14 +15,9 @@
   <div class="container-tela">
     <h1>Estoque</h1>
 
-    <div class="tabela-wrapper">
-      <table class="tabela">
-        <thead>
-          <tr><th>Produto</th><th>Quantidade</th><th>Ações</th></tr>
-        </thead>
-        <tbody id="corpoEstoque"></tbody>
-      </table>
-    </div>
+    <div id="avisoEstoqueBaixo" class="aviso-estoque-baixo" style="display:none"></div>
+
+    <div id="listaEstoque" class="lista-estoque"></div>
   </div>
 
   <script src="js/config.js"></script>

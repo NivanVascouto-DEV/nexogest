@@ -1,38 +1,86 @@
 const token = localStorage.getItem('token');
+let todosClientes = [];
+let contagemPedidosPorCliente = {};
+
+function iniciaisCliente(nome) {
+  if (!nome) return '?';
+  const partes = nome.trim().split(/\s+/);
+  if (partes.length === 1) return partes[0].slice(0, 2).toUpperCase();
+  return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+}
+
+function renderizarClientes(clientes) {
+  const grade = document.getElementById('gradeClientes');
+  grade.innerHTML = '';
+
+  if (clientes.length === 0) {
+    grade.innerHTML = '<p class="ts-small">Nenhum cliente encontrado.</p>';
+    return;
+  }
+
+  clientes.forEach(cliente => {
+    const qtdPedidos = contagemPedidosPorCliente[cliente.id] || 0;
+    const card = document.createElement('div');
+    card.className = 'card-cliente';
+    card.innerHTML = `
+      <div class="card-cliente-avatar">${iniciaisCliente(cliente.nome)}</div>
+      <div class="card-cliente-info">
+        <div class="card-cliente-nome">${cliente.nome}</div>
+        <div class="card-cliente-telefone">${cliente.telefone || '-'}</div>
+      </div>
+      <div class="card-cliente-pedidos">
+        <div class="card-cliente-pedidos-numero">${qtdPedidos}</div>
+        <div class="card-cliente-pedidos-rotulo">pedidos</div>
+      </div>
+      <div class="acoes-linha card-cliente-acoes">
+        <button data-id="${cliente.id}" class="btn-editar-cliente btn-editar-linha">Editar</button>
+        <button data-id="${cliente.id}" class="btn-excluir-cliente btn-excluir-linha">Excluir</button>
+      </div>
+    `;
+    grade.appendChild(card);
+  });
+
+  document.querySelectorAll('.btn-editar-cliente').forEach(btn => {
+    const cliente = clientes.find(c => c.id === parseInt(btn.dataset.id));
+    btn.addEventListener('click', () => editarCliente(cliente));
+  });
+
+  document.querySelectorAll('.btn-excluir-cliente').forEach(btn => {
+    btn.addEventListener('click', () => excluirCliente(parseInt(btn.dataset.id)));
+  });
+}
+
+function aplicarBuscaCliente() {
+  const termo = document.getElementById('buscaCliente').value.trim().toLowerCase();
+
+  if (!termo) {
+    renderizarClientes(todosClientes);
+    return;
+  }
+
+  const filtrados = todosClientes.filter(c =>
+    (c.nome && c.nome.toLowerCase().includes(termo)) ||
+    (c.telefone && c.telefone.includes(termo))
+  );
+  renderizarClientes(filtrados);
+}
+
+document.getElementById('buscaCliente').addEventListener('input', aplicarBuscaCliente);
 
 function carregarClientes() {
-  fetch(`${API_URL}/clientes`, {
-    headers: { 'Authorization': 'Bearer ' + token }
-  })
-    .then(resposta => resposta.json())
-    .then(clientes => {
-      const corpo = document.getElementById('corpoClientes');
-      corpo.innerHTML = '';
+  Promise.all([
+    fetch(`${API_URL}/clientes`, { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json()),
+    fetch(`${API_URL}/pedidos`, { headers: { 'Authorization': 'Bearer ' + token } }).then(r => r.json())
+  ]).then(([clientes, pedidos]) => {
+    todosClientes = clientes;
 
-      clientes.forEach(cliente => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${cliente.nome}</td>
-          <td>${cliente.telefone}</td>
-          <td>
-            <div class="acoes-linha">
-              <button data-id="${cliente.id}" class="btn-editar-cliente btn-editar-linha">Editar</button>
-              <button data-id="${cliente.id}" class="btn-excluir-cliente btn-excluir-linha">Excluir</button>
-            </div>
-          </td>
-        `;
-        corpo.appendChild(tr);
-      });
-
-      document.querySelectorAll('.btn-editar-cliente').forEach(btn => {
-        const cliente = clientes.find(c => c.id === parseInt(btn.dataset.id));
-        btn.addEventListener('click', () => editarCliente(cliente));
-      });
-
-      document.querySelectorAll('.btn-excluir-cliente').forEach(btn => {
-        btn.addEventListener('click', () => excluirCliente(parseInt(btn.dataset.id)));
-      });
+    contagemPedidosPorCliente = {};
+    pedidos.forEach(pedido => {
+      contagemPedidosPorCliente[pedido.cliente_id] = (contagemPedidosPorCliente[pedido.cliente_id] || 0) + 1;
     });
+
+    aplicarBuscaCliente();
+  });
 }
 
 document.getElementById('btnSalvarCliente').addEventListener('click', async () => {

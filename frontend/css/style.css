@@ -1,78 +1,97 @@
 :root {
   --cor-fundo: #F7F3F0;
-  --cor-fundo-2: #FCF7F5;
+  --cor-fundo-2: #FBF5F2;
   --cor-card: #FFFCFB;
-  --cor-borda: #E8E6E2;
-  --cor-borda-suave: #F0E8E2;
+  --cor-card-2: #FDF8F6;
+  --cor-borda: #EBE0D9;
+  --cor-borda-suave: #F3EAE5;
 
-  --cor-texto: #333333;
-  --cor-texto-2: #555555;
-  --cor-texto-3: #888888;
-  --cor-texto-4: #AAAAAA;
+  --cor-texto: #2E2622;
+  --cor-texto-2: #5E504A;
+  --cor-texto-3: #8B7A71;
+  --cor-texto-4: #A99B93;
 
   --cor-destaque: #D4537E;
-  --cor-destaque-clara: #FBEAF0;
-  --cor-destaque-borda: color-mix(in srgb, var(--cor-destaque) 35%, white);
-  --cor-destaque-escura: #993556;
+  --cor-destaque-clara: color-mix(in srgb, var(--cor-destaque) 11%, var(--cor-card));
+  --cor-destaque-borda: color-mix(in srgb, var(--cor-destaque) 32%, var(--cor-card));
+  --cor-destaque-escura: color-mix(in srgb, var(--cor-destaque) 78%, #4A1327);
 
   --cor-marrom: #6B4226;
   --cor-marrom-clara: #A67C5B;
 
   --cor-sucesso: #3B6D11;
-  --cor-sucesso-fundo: #EAF3DE;
+  --cor-sucesso-fundo: #EDF4E1;
+  --cor-sucesso-borda: #CBE0AC;
   --cor-alerta: #854F0B;
-  --cor-alerta-fundo: #FFF8EB;
+  --cor-alerta-fundo: #FDF3E3;
+  --cor-alerta-borda: #EFD5AB;
   --cor-info: #185FA5;
-  --cor-info-fundo: #EDF5FC;
+  --cor-info-fundo: #EAF2FB;
+  --cor-info-borda: #BFD8F2;
   --cor-perigo: #A32D2D;
-  --cor-perigo-fundo: #FCEBEB;
+  --cor-perigo-fundo: #FBEAEA;
+  --cor-perigo-borda: #EEC6C6;
 
   --cor-obs-texto: #7A4A00;
-  --cor-obs-fundo: #FFF3E0;
+  --cor-obs-fundo: #FFF4E2;
   --cor-obs-borda: #F0A030;
 
-  --raio-card: 10px;
-  --raio-botao: 7px;
+  --sombra-1: 0 1px 2px rgba(107, 66, 38, .06);
+  --sombra-2: 0 1px 2px rgba(107, 66, 38, .05), 0 6px 16px -6px rgba(107, 66, 38, .12);
+  --sombra-3: 0 2px 4px rgba(107, 66, 38, .06), 0 18px 36px -12px rgba(107, 66, 38, .20);
+
+  --raio-card: 14px;
+  --raio-card-grande: 18px;
+  --raio-botao: 10px;
 }
 
 body.dark-mode {
-  --cor-fundo: #171613;
-  --cor-fundo-2: #1F1D1A;
-  --cor-card: #242320;
-  --cor-borda: #3A3935;
-  --cor-borda-suave: #3A3935;
+  --cor-fundo: #161513;
+  --cor-fundo-2: #1D1B19;
+  --cor-card: #232120;
+  --cor-card-2: #282523;
+  --cor-borda: #3A3733;
+  --cor-borda-suave: #302D2A;
 
-  --cor-texto: #F2F1EC;
-  --cor-texto-2: #C7C5BE;
-  --cor-texto-3: #A8A69F;
-  --cor-texto-4: #7A786F;
+  --cor-texto: #F4F1EC;
+  --cor-texto-2: #CCC6BE;
+  --cor-texto-3: #A29A92;
+  --cor-texto-4: #7E766E;
 
-  --cor-destaque-clara: #3D1F2A;
-  --cor-destaque-borda: #6B3549;
-  --cor-destaque-escura: #E88FAE;
+  --cor-destaque-clara: color-mix(in srgb, var(--cor-destaque) 20%, var(--cor-card));
+  --cor-destaque-borda: color-mix(in srgb, var(--cor-destaque) 45%, var(--cor-card));
+  --cor-destaque-escura: color-mix(in srgb, var(--cor-destaque) 55%, white);
 
-  --cor-marrom: #E0B88F;
-  --cor-marrom-clara: #C9A57E;
+  --cor-marrom: #E6C09A;
+  --cor-marrom-clara: #C2A180;
 
-  --cor-sucesso: #8FC15C;
-  --cor-sucesso-fundo: #23360F;
-  --cor-alerta: #E0AA5C;
-  --cor-alerta-fundo: #3A2C11;
-  --cor-info: #79B4E8;
-  --cor-info-fundo: #14293B;
-  --cor-perigo: #E28080;
-  --cor-perigo-fundo: #3A1F1F;
+  --cor-sucesso: #9ACB69;
+  --cor-sucesso-fundo: #23320F;
+  --cor-sucesso-borda: #3E561D;
+  --cor-alerta: #E3B26A;
+  --cor-alerta-fundo: #3A2B11;
+  --cor-alerta-borda: #5A431C;
+  --cor-info: #84BAEB;
+  --cor-info-fundo: #152A3C;
+  --cor-info-borda: #27455F;
+  --cor-perigo: #E88A8A;
+  --cor-perigo-fundo: #3A1E1E;
+  --cor-perigo-borda: #5C3030;
 
   --cor-obs-texto: #FFD9A0;
-  --cor-obs-fundo: #3D2E12;
+  --cor-obs-fundo: #3B2B11;
   --cor-obs-borda: #B87333;
+
+  --sombra-1: 0 1px 2px rgba(0, 0, 0, .35);
+  --sombra-2: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 16px -6px rgba(0, 0, 0, .5);
+  --sombra-3: 0 2px 4px rgba(0, 0, 0, .3), 0 18px 36px -12px rgba(0, 0, 0, .6);
 }
 
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   background-color: var(--cor-fundo);
   color: var(--cor-texto);
 }
@@ -84,16 +103,18 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  background: radial-gradient(120% 90% at 50% 0%, var(--cor-destaque-clara) 0%, var(--cor-fundo) 60%);
 }
 
 .login-card {
-  max-width: 300px;
+  max-width: 340px;
   width: 100%;
   margin: 0 auto;
-  padding: 30px;
+  padding: 32px 28px;
   background: var(--cor-card);
-  border-radius: 14px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card-grande);
+  box-shadow: var(--sombra-3);
   text-align: center;
 }
 
@@ -318,7 +339,7 @@ button:hover {
 /* Container padrao das telas */
 
 .container-tela {
-  max-width: 760px;
+  max-width: 960px;
   margin: 0 auto;
 }
 
@@ -330,7 +351,7 @@ button:hover {
   border-radius: var(--raio-card);
   overflow: hidden;
   margin-bottom: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--sombra-1);
 }
 
 table.tabela {
@@ -359,7 +380,7 @@ table.tabela {
   border-bottom: none;
 }
 
-.tabela td .acoes-linha {
+.acoes-linha {
   display: flex;
   gap: 6px;
 }
@@ -378,8 +399,126 @@ table.tabela {
   padding: 4px 6px;
 }
 
+.btn-editar-linha, .btn-excluir-linha {
+  width: auto;
+  padding: 6px 13px;
+  font-size: 12px;
+}
+
 .btn-editar-linha { background-color: var(--cor-destaque); }
 .btn-excluir-linha { background-color: var(--cor-perigo); }
+
+/* Caixa de busca (Cardápio, Clientes) */
+
+.busca-caixa {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 340px;
+  height: 44px;
+  padding: 0 13px;
+  margin-bottom: 14px;
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-botao);
+  box-shadow: var(--sombra-1);
+  color: var(--cor-texto-4);
+}
+
+.busca-caixa input {
+  flex: 1;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--cor-texto);
+}
+
+/* Tela Clientes */
+
+.grade-clientes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.card-cliente {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 15px 16px;
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-1);
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.card-cliente:hover {
+  border-color: var(--cor-destaque-borda);
+  box-shadow: var(--sombra-2);
+  transform: translateY(-1px);
+}
+
+.card-cliente-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: var(--cor-destaque-clara);
+  border: 1px solid var(--cor-destaque-borda);
+  color: var(--cor-destaque-escura);
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.card-cliente-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.card-cliente-nome {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--cor-texto);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-cliente-telefone {
+  font-size: 12.5px;
+  color: var(--cor-texto-3);
+}
+
+.card-cliente-pedidos {
+  text-align: right;
+}
+
+.card-cliente-pedidos-numero {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cor-marrom);
+}
+
+.card-cliente-pedidos-rotulo {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-4);
+}
+
+.card-cliente-acoes {
+  width: 100%;
+  padding-top: 12px;
+  margin-top: 2px;
+  border-top: 1px solid var(--cor-borda-suave);
+}
 
 /* Formularios de cadastro */
 
@@ -392,7 +531,7 @@ table.tabela {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--sombra-1);
 }
 
 .form-cadastro h3 {
@@ -422,6 +561,98 @@ table.tabela {
 .badge-info { background-color: var(--cor-info-fundo); color: var(--cor-info); }
 .badge-alerta { background-color: var(--cor-alerta-fundo); color: var(--cor-alerta); }
 
+/* Tela Estoque */
+
+.aviso-estoque-baixo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  margin-bottom: 16px;
+  background: var(--cor-alerta-fundo);
+  border: 1px solid var(--cor-alerta-borda);
+  border-radius: var(--raio-card);
+  color: var(--cor-alerta);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.lista-estoque {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-estoque {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 18px;
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card);
+  box-shadow: var(--sombra-1);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.item-estoque:hover {
+  border-color: var(--cor-destaque-borda);
+  box-shadow: var(--sombra-2);
+}
+
+.item-estoque-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-estoque-nome {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--cor-texto);
+}
+
+.item-estoque-barra {
+  margin-top: 7px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--cor-borda-suave);
+  overflow: hidden;
+}
+
+.item-estoque-barra-preenchida {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.item-estoque-qtd {
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0 11px;
+  border-radius: 8px;
+  border: 1px solid;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.item-estoque .btn-entrada-estoque {
+  width: auto;
+  height: 38px;
+  padding: 0 14px;
+  background: var(--cor-card);
+  color: var(--cor-destaque-escura);
+  border: 1px solid var(--cor-destaque-borda);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.item-estoque .btn-entrada-estoque:hover {
+  background: var(--cor-destaque-clara);
+  filter: none;
+}
+
 /* Cards de estatistica (Pedidos) */
 
 .stats-grid {
@@ -438,7 +669,7 @@ table.tabela {
   text-align: center;
   min-width: 64px;
   flex: 1;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--sombra-1);
 }
 
 .stat-card .stat-numero {
@@ -504,12 +735,14 @@ table.tabela {
   border-radius: var(--raio-card);
   margin-bottom: 10px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--sombra-1);
+  transition: box-shadow .18s ease, border-color .18s ease, transform .18s ease;
 }
 
 .pedido-card:hover {
   border-color: var(--cor-destaque);
-  box-shadow: 0 0 0 2px var(--cor-destaque-clara);
+  box-shadow: var(--sombra-2);
+  transform: translateY(-1px);
 }
 
 .atalhos-legenda {
@@ -641,6 +874,45 @@ body:has(.atalhos-legenda) .container-tela {
 
 /* Tela Novo Pedido (Venda) */
 
+.container-tela-venda {
+  max-width: 1120px;
+}
+
+.venda-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 18px;
+  align-items: start;
+}
+
+.venda-coluna-principal {
+  min-width: 0;
+}
+
+.venda-resumo-lateral {
+  position: sticky;
+  top: 18px;
+}
+
+.secao-resumo {
+  border-color: var(--cor-destaque-borda);
+  box-shadow: var(--sombra-2);
+}
+
+.secao-resumo #btnFinalizar {
+  margin-top: 4px;
+}
+
+@media (max-width: 1120px) {
+  .venda-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .venda-resumo-lateral {
+    position: static;
+  }
+}
+
 .secao-form {
   background: var(--cor-card);
   border: 1px solid var(--cor-destaque-borda);
@@ -650,7 +922,7 @@ body:has(.atalhos-legenda) .container-tela {
   display: flex;
   flex-direction: column;
   gap: 9px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--sombra-1);
 }
 
 .secao-form h3 {
@@ -747,7 +1019,7 @@ body:has(.atalhos-legenda) .container-tela {
   background-color: var(--cor-card);
   border: 1px solid var(--cor-destaque-borda);
   border-radius: var(--raio-botao);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--sombra-3);
   z-index: 10;
   max-height: 160px;
   overflow-y: auto;
@@ -771,7 +1043,7 @@ body:has(.atalhos-legenda) .container-tela {
   border-radius: var(--raio-botao);
   padding: 12px;
   margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--sombra-1);
 }
 
 .resumo-linha {
@@ -801,58 +1073,160 @@ body:has(.atalhos-legenda) .container-tela {
 
 .troco-resultado {
   background-color: var(--cor-sucesso-fundo);
+  border: 1px solid var(--cor-sucesso-borda);
   color: var(--cor-sucesso);
   border-radius: var(--raio-botao);
-  padding: 9px 14px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
 }
 
 .troco-resultado.troco-faltando {
   background-color: var(--cor-perigo-fundo);
+  border-color: var(--cor-perigo-borda);
   color: var(--cor-perigo);
 }
 
 #btnFinalizar {
-  background-color: var(--cor-sucesso-fundo);
-  color: var(--cor-sucesso);
-  border: 1px solid #B5D98A;
-  padding: 12px;
+  background-color: var(--cor-sucesso);
+  color: #fff;
+  border: none;
+  padding: 15px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: var(--sombra-2);
+}
+
+#btnFinalizar:hover {
+  filter: brightness(1.08);
 }
 
 /* Financeiro */
 
-.metricas-grid {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-  flex-wrap: wrap;
+.hero-financeiro {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
-.metricas-grid > div {
-  flex: 1;
-  min-width: 120px;
+@media (max-width: 900px) {
+  .hero-financeiro {
+    grid-template-columns: 1fr;
+  }
 }
 
-.metrica-card {
-  background-color: var(--cor-fundo-2);
+.hero-receita {
+  padding: 22px;
+  background: linear-gradient(160deg, var(--cor-destaque-clara) 0%, var(--cor-card) 65%);
   border: 1px solid var(--cor-destaque-borda);
-  border-radius: var(--raio-card);
-  padding: 11px 13px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: var(--raio-card-grande);
+  box-shadow: var(--sombra-2);
 }
 
-.metrica-label {
-  font-size: 11px;
-  color: var(--cor-texto-4);
-  margin: 0 0 3px;
+.hero-receita-rotulo {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--cor-destaque-escura);
 }
 
-.metrica-valor {
-  font-size: 16px;
+.hero-receita-valor {
+  margin-top: 10px;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--cor-marrom);
+}
+
+.hero-receita-periodo {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--cor-texto-3);
+}
+
+.hero-receita-divisao {
+  display: flex;
+  gap: 22px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--cor-destaque-borda);
+}
+
+.hero-receita-linha-vertical {
+  width: 1px;
+  background: var(--cor-destaque-borda);
+}
+
+.hero-receita-sublabel {
+  font-size: 11.5px;
   font-weight: 600;
-  margin: 0;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--cor-texto-3);
+}
+
+.hero-receita-subvalor {
+  margin-top: 3px;
+  font-size: 19px;
+  font-weight: 700;
   color: var(--cor-texto);
+}
+
+.hero-receita-subvalor-ok {
+  color: var(--cor-sucesso);
+}
+
+.hero-pagamentos {
+  padding: 20px;
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-card-grande);
+  box-shadow: var(--sombra-1);
+}
+
+.hero-pagamentos-titulo {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--cor-texto-3);
+  margin-bottom: 16px;
+}
+
+.hero-pagamentos-linha + .hero-pagamentos-linha {
+  margin-top: 15px;
+}
+
+.hero-pagamentos-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  font-size: 13.5px;
+  color: var(--cor-texto-2);
+}
+
+.hero-pagamentos-valor {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cor-texto);
+}
+
+.hero-pagamentos-barra {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--cor-borda-suave);
+  overflow: hidden;
+}
+
+.hero-pagamentos-barra-preenchida {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--cor-destaque);
 }
 
 .ts-small {
@@ -888,7 +1262,7 @@ body:has(.atalhos-legenda) .container-tela {
   color: #fff;
   padding: 12px 20px;
   border-radius: var(--raio-card);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--sombra-3);
   font-size: 13px;
   font-weight: 600;
   z-index: 100;
@@ -1007,12 +1381,22 @@ body:has(.atalhos-legenda) .container-tela {
   .abas,
   .filtro-data,
   .linha-adicionar-item,
-  .calculadora-kg {
+  .calculadora-kg,
+  .item-estoque {
     flex-wrap: wrap;
   }
 
   .linha-adicionar-item select,
   .filtro-data input {
     flex: 1 1 100%;
+  }
+
+  .item-estoque-info {
+    flex: 1 1 100%;
+    order: -1;
+  }
+
+  .busca-caixa {
+    max-width: 100%;
   }
 }

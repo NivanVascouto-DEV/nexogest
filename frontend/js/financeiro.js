@@ -1,25 +1,36 @@
 const token = localStorage.getItem('token');
 let todasDespesas = [];
 
+function formatarDataCurta(dataISO) {
+  const [ano, mes, dia] = dataISO.split('-');
+  return `${dia}/${mes}`;
+}
+
 function carregarDRE() {
   fetch(`${API_URL}/relatorios/dre`, {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(resposta => resposta.json())
     .then(dre => {
-      const container = document.getElementById('metricasDRE');
+      const inicio = document.getElementById('dataInicioFin').value;
+      const fim = document.getElementById('dataFimFin').value;
+      const periodo = inicio && fim ? `${formatarDataCurta(inicio)} a ${formatarDataCurta(fim)}` : 'Período atual';
+
+      const container = document.getElementById('heroReceita');
       container.innerHTML = `
-        <div class="metrica-card">
-          <p class="metrica-label">Receita total</p>
-          <p class="metrica-valor">R$ ${dre.receita_bruta.toFixed(2)}</p>
-        </div>
-        <div class="metrica-card">
-          <p class="metrica-label">Lucro bruto</p>
-          <p class="metrica-valor">R$ ${dre.lucro_bruto.toFixed(2)}</p>
-        </div>
-        <div class="metrica-card">
-          <p class="metrica-label">Lucro líquido</p>
-          <p class="metrica-valor">R$ ${dre.lucro_liquido.toFixed(2)}</p>
+        <span class="hero-receita-rotulo">Receita do período</span>
+        <div class="hero-receita-valor">R$ ${dre.receita_bruta.toFixed(2)}</div>
+        <div class="hero-receita-periodo">${periodo}</div>
+        <div class="hero-receita-divisao">
+          <div>
+            <div class="hero-receita-sublabel">Lucro bruto</div>
+            <div class="hero-receita-subvalor">R$ ${dre.lucro_bruto.toFixed(2)}</div>
+          </div>
+          <div class="hero-receita-linha-vertical"></div>
+          <div>
+            <div class="hero-receita-sublabel">Lucro líquido</div>
+            <div class="hero-receita-subvalor hero-receita-subvalor-ok">R$ ${dre.lucro_liquido.toFixed(2)}</div>
+          </div>
         </div>
       `;
     });
@@ -31,11 +42,27 @@ function carregarPagamentos() {
   })
     .then(resposta => resposta.json())
     .then(saldos => {
-      const container = document.getElementById('metricasPagamento');
+      const formas = [
+        { nome: 'Dinheiro', valor: saldos.dinheiro },
+        { nome: 'Cartão', valor: saldos.cartao },
+        { nome: 'Pix', valor: saldos.pix }
+      ];
+      const maior = Math.max(...formas.map(f => f.valor), 0.01);
+
+      const container = document.getElementById('heroPagamentos');
       container.innerHTML = `
-        <div class="metrica-card"><p class="metrica-label">Dinheiro</p><p class="metrica-valor">R$ ${saldos.dinheiro.toFixed(2)}</p></div>
-        <div class="metrica-card"><p class="metrica-label">Cartão</p><p class="metrica-valor">R$ ${saldos.cartao.toFixed(2)}</p></div>
-        <div class="metrica-card"><p class="metrica-label">Pix</p><p class="metrica-valor">R$ ${saldos.pix.toFixed(2)}</p></div>
+        <div class="hero-pagamentos-titulo">Saldo por forma de pagamento</div>
+        ${formas.map(f => `
+          <div class="hero-pagamentos-linha">
+            <div class="hero-pagamentos-cabecalho">
+              <span>${f.nome}</span>
+              <span class="hero-pagamentos-valor">R$ ${f.valor.toFixed(2)}</span>
+            </div>
+            <div class="hero-pagamentos-barra">
+              <div class="hero-pagamentos-barra-preenchida" style="width:${Math.max(2, (f.valor / maior) * 100)}%"></div>
+            </div>
+          </div>
+        `).join('')}
       `;
     });
 }

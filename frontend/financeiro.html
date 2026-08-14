@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <title>NexoGest - Financeiro</title>
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <link rel="stylesheet" href="css/style.css?v=3">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#D4537E">
 </head>
@@ -12,8 +15,10 @@
   <div class="container-tela">
     <h1>Financeiro</h1>
 
-    <div class="metricas-grid" id="metricasDRE"></div>
-    <div class="metricas-grid" id="metricasPagamento"></div>
+    <div class="hero-financeiro">
+      <div class="hero-receita" id="heroReceita"></div>
+      <div class="hero-pagamentos" id="heroPagamentos"></div>
+    </div>
 
     <div class="filtro-data">
       <input type="date" id="dataInicioFin">
