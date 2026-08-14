@@ -249,15 +249,29 @@ document.getElementById('valorRecebido').addEventListener('input', atualizarTroc
 document.getElementById('totalEditavel').addEventListener('input', atualizarTroco);
 
 async function buscarOuCriarCliente(nome, telefone, endereco) {
-  const resposta = await fetch(`${API_URL}/clientes`, {
-    headers: { 'Authorization': 'Bearer ' + token }
-  });
-  const clientes = await resposta.json();
+  const telefoneNormalizado = telefone ? telefone.trim() : '';
 
-  const clienteExistente = clientes.find(c => c.telefone === telefone);
+  // So procura um cliente existente quando um telefone de verdade foi
+  // informado. Antes, a busca era "clientes.find(c => c.telefone === telefone)"
+  // mesmo com telefone vazio - e como so existe UM cliente no banco inteiro
+  // com telefone em branco (o primeiro pedido sem telefone que alguem
+  // cadastrou), TODO pedido feito sem telefone (nome digitado nao importa)
+  // acabava sendo associado a esse mesmo cliente antigo, sobrescrevendo o
+  // nome exibido do pedido pelo nome daquele cliente. Foi isso que causou os
+  // pedidos #35-#39 (e provavelmente outros antes deles) aparecerem todos
+  // com o nome "DONA PENHA" - nao tem relacao com o clique duplo corrigido
+  // antes, os pedidos foram criados minutos separados um do outro, cada um
+  // com itens e total corretos e distintos, so o cliente_id que ficava errado.
+  if (telefoneNormalizado) {
+    const resposta = await fetch(`${API_URL}/clientes`, {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    const clientes = await resposta.json();
+    const clienteExistente = clientes.find(c => c.telefone === telefoneNormalizado);
 
-  if (clienteExistente) {
-    return clienteExistente.id;
+    if (clienteExistente) {
+      return clienteExistente.id;
+    }
   }
 
   const respostaNovoCliente = await fetch(`${API_URL}/clientes`, {
@@ -266,7 +280,7 @@ async function buscarOuCriarCliente(nome, telefone, endereco) {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + token
     },
-    body: JSON.stringify({ nome: nome || 'Cliente', telefone: telefone, endereco: endereco })
+    body: JSON.stringify({ nome: nome || 'Cliente', telefone: telefoneNormalizado, endereco: endereco })
   });
 
   const novoCliente = await respostaNovoCliente.json();
