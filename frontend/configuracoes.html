@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <title>NexoGest - Configurações</title>
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <link rel="stylesheet" href="css/style.css?v=4">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#D4537E">
 </head>
@@ -17,32 +17,66 @@
 
     <div class="form-cadastro">
       <h3>Aparência</h3>
-      <label>Tema</label>
-      <select id="temaSelect">
-        <option value="claro">Claro</option>
-        <option value="escuro">Escuro</option>
-      </select>
-      <label>Cor de destaque</label>
-      <input type="color" id="corSecundaria" value="#D4537E">
+
+      <div class="config-linha config-linha-borda-baixo">
+        <div>
+          <div class="config-linha-titulo">Tema</div>
+          <div class="config-linha-sub">Claro para o balcão, escuro para a cozinha</div>
+        </div>
+        <div class="segmentado" id="segmentadoTema">
+          <button type="button" class="segmentado-btn" data-tema="claro">Claro</button>
+          <button type="button" class="segmentado-btn" data-tema="escuro">Escuro</button>
+        </div>
+      </div>
+
+      <div class="config-linha">
+        <div>
+          <div class="config-linha-titulo">Cor de destaque</div>
+          <div class="config-linha-sub">Aplicada em botões, abas e destaques</div>
+        </div>
+        <div class="config-cores" id="paletaCores">
+          <button type="button" class="swatch" data-cor="#D4537E" style="background:#D4537E" aria-label="Rosa"></button>
+          <button type="button" class="swatch" data-cor="#185FA5" style="background:#185FA5" aria-label="Azul"></button>
+          <button type="button" class="swatch" data-cor="#3B6D11" style="background:#3B6D11" aria-label="Verde"></button>
+          <button type="button" class="swatch" data-cor="#854F0B" style="background:#854F0B" aria-label="Marrom"></button>
+          <input type="color" id="corSecundaria" title="Cor personalizada" class="swatch-personalizada">
+        </div>
+      </div>
     </div>
 
     <div class="form-cadastro">
       <h3>Impressão térmica</h3>
-      <label>Largura do papel</label>
-      <select id="larguraSelect">
-        <option value="58">58mm</option>
-        <option value="80">80mm</option>
-      </select>
+      <div class="config-linha">
+        <div>
+          <div class="config-linha-titulo">Largura do papel</div>
+          <div class="config-linha-sub">Vale para cupom de cozinha e de cliente</div>
+        </div>
+        <select id="larguraSelect">
+          <option value="58">58mm</option>
+          <option value="80">80mm</option>
+        </select>
+      </div>
     </div>
 
     <div class="form-cadastro">
       <h3>Notificações</h3>
-      <label class="checkbox-label">
-        <input type="checkbox" id="somAtivo">
-        Notificações sonoras
-      </label>
-      <label>Volume</label>
-      <input type="range" id="volumeRange" min="0" max="100" value="70">
+      <div class="config-linha config-linha-borda-baixo">
+        <div>
+          <div class="config-linha-titulo">Som ao chegar pedido</div>
+          <div class="config-linha-sub">Toca um alerta curto a cada novo pedido</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="somAtivo">
+          <span class="toggle-switch-trilho"></span>
+        </label>
+      </div>
+      <div class="config-volume">
+        <div class="config-volume-cabecalho">
+          <span>Volume</span>
+          <span id="volumeRotulo">70%</span>
+        </div>
+        <input type="range" id="volumeRange" min="0" max="100" value="70">
+      </div>
     </div>
 
     <button id="btnSalvarConfig">Salvar configurações</button>

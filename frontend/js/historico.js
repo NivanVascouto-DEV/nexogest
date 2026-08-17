@@ -51,34 +51,39 @@ async function carregarHistorico() {
 }
 
 function renderizarHistorico(pedidos) {
-  const corpo = document.getElementById('corpoHistorico');
-  corpo.innerHTML = '';
+  const lista = document.getElementById('listaHistorico');
+  lista.innerHTML = '';
   detalhesAbertos = null;
 
+  const resumo = document.getElementById('resumoHistorico');
+  const totalVendas = pedidos.reduce((soma, p) => soma + (parseFloat(p.total) || 0), 0);
+  resumo.innerHTML = pedidos.length === 0
+    ? ''
+    : `${pedidos.length} venda${pedidos.length > 1 ? 's' : ''} · <strong>R$ ${totalVendas.toFixed(2)}</strong>`;
+
   if (pedidos.length === 0) {
-    corpo.innerHTML = '<tr><td colspan="6">Nenhuma venda encontrada.</td></tr>';
+    lista.innerHTML = '<p class="ts-small">Nenhuma venda encontrada.</p>';
     return;
   }
 
   pedidos.forEach(pedido => {
     const cliente = clientesMap[pedido.cliente_id];
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>#${pedido.id}</td>
-      <td>${formatarData(pedido.data_pedido)}</td>
-      <td>${cliente ? cliente.nome : '-'}</td>
-      <td>${ROTULO_PAGAMENTO[pedido.forma_pagamento] || pedido.forma_pagamento || '-'}</td>
-      <td>R$ ${pedido.total}</td>
-      <td><button type="button" class="btn-ver-detalhes btn-editar-linha" data-id="${pedido.id}">Ver detalhes</button></td>
+    const card = document.createElement('div');
+    card.className = 'card-historico';
+    card.dataset.pedidoId = pedido.id;
+    card.innerHTML = `
+      <div class="card-historico-linha">
+        <span class="card-historico-id">#${pedido.id}</span>
+        <div class="card-historico-info">
+          <div class="card-historico-cliente">${cliente ? cliente.nome : 'Cliente não identificado'}</div>
+          <div class="card-historico-meta">${formatarData(pedido.data_pedido)} · ${ROTULO_PAGAMENTO[pedido.forma_pagamento] || pedido.forma_pagamento || '-'}</div>
+        </div>
+        <span class="card-historico-total">R$ ${pedido.total}</span>
+        <button type="button" class="btn-ver-detalhes" data-id="${pedido.id}">Detalhes</button>
+      </div>
+      <div class="card-historico-detalhes" style="display:none"></div>
     `;
-    corpo.appendChild(tr);
-
-    const trDetalhes = document.createElement('tr');
-    trDetalhes.className = 'linha-detalhes-pedido';
-    trDetalhes.dataset.pedidoId = pedido.id;
-    trDetalhes.style.display = 'none';
-    trDetalhes.innerHTML = `<td colspan="6"></td>`;
-    corpo.appendChild(trDetalhes);
+    lista.appendChild(card);
   });
 
   document.querySelectorAll('.btn-ver-detalhes').forEach(btn => {
@@ -89,9 +94,9 @@ function renderizarHistorico(pedidos) {
 function alternarDetalhes(pedidoId) {
   const jaAberto = detalhesAbertos === pedidoId;
 
-  document.querySelectorAll('.linha-detalhes-pedido').forEach(tr => {
-    tr.style.display = 'none';
-    tr.querySelector('td').innerHTML = '';
+  document.querySelectorAll('.card-historico-detalhes').forEach(div => {
+    div.style.display = 'none';
+    div.innerHTML = '';
   });
 
   if (jaAberto) {
@@ -100,7 +105,8 @@ function alternarDetalhes(pedidoId) {
   }
 
   detalhesAbertos = pedidoId;
-  const trDetalhes = document.querySelector(`.linha-detalhes-pedido[data-pedido-id="${pedidoId}"]`);
+  const card = document.querySelector(`.card-historico[data-pedido-id="${pedidoId}"]`);
+  const detalhes = card.querySelector('.card-historico-detalhes');
   const itens = itensPorPedido[pedidoId] || [];
 
   const itensHtml = itens.length === 0
@@ -113,8 +119,8 @@ function alternarDetalhes(pedidoId) {
         return `<div class="resumo-linha"><span>${qtd}x ${nome} — R$ ${preco.toFixed(2)} cada</span><span>R$ ${(qtd * preco).toFixed(2)}</span></div>`;
       }).join('');
 
-  trDetalhes.querySelector('td').innerHTML = `<div class="detalhes-pedido-conteudo">${itensHtml}</div>`;
-  trDetalhes.style.display = '';
+  detalhes.innerHTML = itensHtml;
+  detalhes.style.display = 'block';
 }
 
 function formatarData(dataStr) {

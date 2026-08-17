@@ -85,15 +85,31 @@ function carregarPedidos() {
 
 function renderizarStats() {
   const container = document.getElementById('statsPedidos');
+  const abertos = todosPedidos.filter(p => ['pendente', 'preparando', 'saiu_para_entrega'].includes(p.status));
   const contagem = {
     pendente: todosPedidos.filter(p => p.status === 'pendente').length,
     preparando: todosPedidos.filter(p => p.status === 'preparando').length,
     saiu_para_entrega: todosPedidos.filter(p => p.status === 'saiu_para_entrega').length
   };
+  const totalAberto = abertos.reduce((soma, p) => soma + (parseFloat(p.total) || 0), 0);
+
   container.innerHTML = `
-    <div class="stat-card"><p class="stat-numero">${contagem.pendente}</p><p class="stat-rotulo">Pendentes</p></div>
-    <div class="stat-card"><p class="stat-numero">${contagem.preparando}</p><p class="stat-rotulo">Preparo</p></div>
-    <div class="stat-card"><p class="stat-numero">${contagem.saiu_para_entrega}</p><p class="stat-rotulo">Prontos</p></div>
+    <div class="stat-card">
+      <div class="stat-cabecalho"><span class="stat-ponto stat-ponto-alerta"></span><p class="stat-rotulo">Pendentes</p></div>
+      <p class="stat-numero">${contagem.pendente}</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-cabecalho"><span class="stat-ponto stat-ponto-info"></span><p class="stat-rotulo">Preparo</p></div>
+      <p class="stat-numero">${contagem.preparando}</p>
+    </div>
+    <div class="stat-card">
+      <div class="stat-cabecalho"><span class="stat-ponto stat-ponto-ok"></span><p class="stat-rotulo">Prontos</p></div>
+      <p class="stat-numero">${contagem.saiu_para_entrega}</p>
+    </div>
+    <div class="stat-card stat-card-destaque">
+      <p class="stat-rotulo">Em aberto</p>
+      <p class="stat-numero">R$ ${totalAberto.toFixed(2)}</p>
+    </div>
   `;
 }
 

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>NexoGest - Custo</title>
+  <link rel="stylesheet" href="css/style.css?v=4">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#D4537E">
+</head>
+<body>
+  <div class="container-tela container-tela-custo">
+    <h1>Custo de produção</h1>
+
+    <div class="custo-grid">
+      <div class="custo-coluna-principal">
+        <div class="secao-form">
+          <div class="custo-cabecalho">
+            <div class="custo-cabecalho-produto">
+              <label for="selectProdutoCusto">Ficha técnica do produto</label>
+              <select id="selectProdutoCusto"></select>
+            </div>
+            <div class="custo-rendimento">
+              <span class="ts-small">Rendimento</span>
+              <div class="stepper">
+                <button type="button" id="btnMenosRend" aria-label="Diminuir rendimento">−</button>
+                <input type="number" id="inputRendimento" value="1" min="1">
+                <button type="button" id="btnMaisRend" aria-label="Aumentar rendimento">+</button>
+              </div>
+              <span class="ts-small">un.</span>
+            </div>
+          </div>
+
+          <div class="linha-adicionar-item">
+            <select id="selectInsumo"></select>
+            <input type="number" id="qtdInsumoFicha" placeholder="Qtd" step="0.001" min="0">
+            <button type="button" id="btnAddInsumoFicha">+ Insumo</button>
+          </div>
+
+          <div id="listaInsumosFicha"><p class="ts-small">Selecione um produto para montar a ficha técnica.</p></div>
+        </div>
+
+        <div class="secao-form">
+          <h3>Insumos cadastrados</h3>
+          <div class="linha-adicionar-item">
+            <input type="text" id="nomeInsumo" placeholder="Nome do insumo">
+            <select id="unidadeInsumo">
+              <option value="g">g</option>
+              <option value="kg">kg</option>
+              <option value="ml">ml</option>
+              <option value="l">l</option>
+              <option value="unidade">unidade</option>
+            </select>
+            <input type="number" id="custoInsumo" placeholder="Custo por unidade" step="0.01" min="0">
+            <button type="button" id="btnSalvarInsumo">+ Adicionar</button>
+          </div>
+          <div id="listaInsumosCadastrados"></div>
+        </div>
+      </div>
+
+      <aside class="custo-resumo-lateral">
+        <div class="secao-form secao-resumo-custo">
+          <div class="custo-rotulo">Custo por unidade</div>
+          <div class="custo-valor-grande" id="custoPorUnidade">R$ 0,00</div>
+
+          <div class="custo-divisao">
+            <div class="custo-divisao-linha"><span>Custo total da receita</span><span id="custoTotalReceita">R$ 0,00</span></div>
+            <div class="custo-divisao-linha"><span>Rende</span><span id="rendimentoTexto">1 un.</span></div>
+          </div>
+
+          <div class="custo-margem">
+            <div class="custo-rotulo">Margem desejada</div>
+            <div class="custo-margem-botoes" id="botoesMargem"></div>
+            <div class="custo-preco-sugerido">
+              <span>Preço sugerido</span>
+              <span id="precoSugerido">R$ 0,00</span>
+            </div>
+            <p class="ts-small" id="notaSugerido">Selecione uma margem para calcular.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/menu.js"></script>
+  <script src="js/custo.js"></script>
+</body>
+</html>
